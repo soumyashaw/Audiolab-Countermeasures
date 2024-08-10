@@ -573,7 +573,7 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
         degraded = [degraded]
     
     print("-"*80)
-    print("Speech Transmission Index (STI) from speech waveforms").center(80)
+    print("Speech Transmission Index (STI) from speech waveforms".center(80))
     print("-"*80)
     print()
     print("Sample set:             ", name)
@@ -585,7 +585,7 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
     else:
         print("no")
     print
-    print(" Reference Speech ").center(80,'*')
+    print(" Reference Speech ".center(80,'*'))
     
     refOctaveBands = octaveBandFilter(reference, hz)
     refRate = hz
@@ -614,7 +614,7 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
     
     # loop over degraded audio samples and calculate STIs
     for j,sample in enumerate(degraded):
-        print(" Degraded Speech: Sample {0} ").format(j + 1).center(80,'*')
+        print(" Degraded Speech: Sample {0} ".format(j + 1).center(80,'*'))
         degrOctaveBands = octaveBandFilter(sample, hz)
         degrRate = hz
         
@@ -639,7 +639,7 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
         print
     
     # calculate the STI values
-    print(" Speech Transmission Index ").center(80,'*')
+    print(" Speech Transmission Index ".center(80,'*'))
     for i in range(0,len(thirdOctaveTemps)):
         sampleSTI = sti(thirdOctaveTemps[i][0], thirdOctaveTemps[i][1])
         
@@ -653,7 +653,7 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
     if len(stiValues) == 1:
         stiValues = stiValues[0]
     
-    print    
+    print()
     return stiValues
 
 def readwav(path):
