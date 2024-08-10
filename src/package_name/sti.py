@@ -18,7 +18,7 @@ from sys import stdout
 from warnings import catch_warnings,simplefilter
 
 __author__ = "Jonathan Polom <jmpolom@wayne.edu>"
-__date__ = date(2011, 04, 22)
+__date__ = date(2011, 4, 22)
 __version__ = "0.5"
 
 def thirdOctaves(minFreq, maxFreq):
@@ -170,9 +170,9 @@ def octaveBandFilter(audio, hz,
         Filtered audio sample rate
     """
 
-    print "Butterworth filter order:",butterOrd
-    print "Hamming filter length:   ",hammingTime,"milliseconds"
-    print "Audio sample rate:       ",hz
+    print("Butterworth filter order:", butterOrd)
+    print("Hamming filter length:   ", hammingTime, "milliseconds")
+    print("Audio sample rate:       ", hz)
 
     # calculate the nyquist frequency
     nyquist = hz * 0.5
@@ -262,8 +262,8 @@ def octaveBandSpectra(filteredAudioBands, hz, fftRes=0.06):
     # FFT window size for PSD calculation: 32768 for ~0.06 Hz res at 2 kHz
     psdWindow = fftWindowSize(fftRes, hz)
     
-    print "Calculating octave band power spectras",
-    print "(FFT length:",psdWindow,"samples)"
+    print("Calculating octave band power spectras")
+    print("(FFT length:", psdWindow, "samples)")
 
     for band in filteredAudioBands:        
         spectra, freqs = psd(band, NFFT=psdWindow, Fs=hz)
@@ -319,8 +319,8 @@ def octaveBandCoherence(degrAudioBands, refAudioBands,
     # larger than half the length of the signal
     psdWindow = fftWindowSize(fftRes, hz)
     
-    print "Calculating degraded and reference audio coherence",
-    print "(FFT length:",psdWindow,"samples)"
+    print("Calculating degraded and reference audio coherence")
+    print("(FFT length:", psdWindow, "samples)")
 
     for i,band in enumerate(degrAudioBands):
         with catch_warnings():      # catch and ignore spurious warnings
@@ -367,8 +367,8 @@ def thirdOctaveRootSum(spectras, fftfreqs, minFreq=0.25, maxFreq=25.0):
         Square root of spectra sums over 1/3 octave intervals
     """
 
-    print "Calculating 1/3 octave square-rooted sums from",
-    print minFreq,"to",maxFreq,"Hz"
+    print("Calculating 1/3 octave square-rooted sums from")
+    print(minFreq, "to", maxFreq, "Hz")
 
     thirdOctaveBands = thirdOctaves(minFreq, maxFreq)
         
@@ -432,8 +432,8 @@ def thirdOctaveRMS(spectras, fftfreqs, minFreq=0.25, maxFreq=25.0):
         RMS value of spectra over 1/3 octave intervals
     """
 
-    print "Calculating 1/3 octave RMS values from",
-    print minFreq,"to",maxFreq,"Hz"
+    print("Calculating 1/3 octave RMS values from")
+    print(minFreq, "to", maxFreq, "Hz")
 
     thirdOctaveBands = thirdOctaves(minFreq, maxFreq)
         
@@ -524,7 +524,7 @@ def sti(modulations, coherences, minCoherence=0.8):
     snrp = snrp.sum()
     index = (snrp + 15) / 30.0
     
-    print "Speech Transmission Index (STI):",index
+    print("Speech Transmission Index (STI):", index)
     return index
 
 def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
@@ -572,20 +572,20 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
     if type(degraded) is not type([]):
         degraded = [degraded]
     
-    print "-"*80
-    print "Speech Transmission Index (STI) from speech waveforms".center(80)
-    print "-"*80
-    print
-    print "Sample set:             ",name
-    print "Number of samples:      ",len(degraded)
-    print "Date/time:              ",datetime.now().isoformat()
-    print "Calculate reference STI:",
+    print("-"*80)
+    print("Speech Transmission Index (STI) from speech waveforms").center(80)
+    print("-"*80)
+    print()
+    print("Sample set:             ", name)
+    print("Number of samples:      ", len(degraded))
+    print("Date/time:              ", datetime.now().isoformat())
+    print("Calculate reference STI:")
     if calcref:
-        print "yes"
+        print("yes")
     else:
-        print "no"
+        print("no")
     print
-    print " Reference Speech ".center(80,'*')
+    print(" Reference Speech ").center(80,'*')
     
     refOctaveBands = octaveBandFilter(reference, hz)
     refRate = hz
@@ -614,7 +614,7 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
     
     # loop over degraded audio samples and calculate STIs
     for j,sample in enumerate(degraded):
-        print " Degraded Speech: Sample {0} ".format(j + 1).center(80,'*')
+        print(" Degraded Speech: Sample {0} ").format(j + 1).center(80,'*')
         degrOctaveBands = octaveBandFilter(sample, hz)
         degrRate = hz
         
@@ -639,7 +639,7 @@ def stiFromAudio(reference, degraded, hz, calcref=False, downsample=None,
         print
     
     # calculate the STI values
-    print " Speech Transmission Index ".center(80,'*')
+    print(" Speech Transmission Index ").center(80,'*')
     for i in range(0,len(thirdOctaveTemps)):
         sampleSTI = sti(thirdOctaveTemps[i][0], thirdOctaveTemps[i][1])
         

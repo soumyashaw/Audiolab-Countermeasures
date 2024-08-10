@@ -1,4 +1,8 @@
+#!/usr/bin/python
+
+import argparse
 from simple_term_menu import TerminalMenu
+from package_name.sti import stiFromAudio, readwav
 
 def main():
     # Define the menu options
@@ -17,12 +21,15 @@ def main():
 
         # Perform actions based on the selected option
         if selected_option_index == 0:
-            print("Hello, World!")
+            print("Calculating Average STI...")
+            print("Target Directory: ", args.target_dir)
+            print("Reference Directory: ", args.reference_dir)
+            
 
         elif selected_option_index == 1:
             from datetime import datetime
             print(f"Current date and time: {datetime.now()}")
-            
+
         elif selected_option_index == 2:
             print("Exiting the program. Goodbye!")
             break
@@ -31,4 +38,8 @@ def main():
         input("\nPress Enter to return to the menu...")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="")
+    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="")
+    args = parser.parse_args()
     main()
