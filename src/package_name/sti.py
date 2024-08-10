@@ -317,7 +317,7 @@ def octaveBandCoherence(degrAudioBands, refAudioBands,
     # FFT window size for PSD calculation: 32768 for ~0.06 Hz res at 2 kHz
     # Beware that 'cohere' isn't as forgiving as 'psd' with FFT lengths 
     # larger than half the length of the signal
-    psdWindow = fftWindowSize(fftRes, hz)
+    psdWindow = fftWindowSize(fftRes, hz)/2
     
     print("Calculating degraded and reference audio coherence")
     print("(FFT length:", psdWindow, "samples)")
