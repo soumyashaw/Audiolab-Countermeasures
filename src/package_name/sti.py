@@ -260,7 +260,7 @@ def octaveBandSpectra(filteredAudioBands, hz, fftRes=0.06):
     """
 
     # FFT window size for PSD calculation: 32768 for ~0.06 Hz res at 2 kHz
-    psdWindow = fftWindowSize(fftRes, hz)
+    psdWindow = int(fftWindowSize(fftRes, hz)/1024)
     
     print("Calculating octave band power spectras")
     print("(FFT length:", psdWindow, "samples)")
