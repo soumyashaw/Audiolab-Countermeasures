@@ -30,13 +30,20 @@ def main():
             reference_files = os.listdir(args.reference_dir)
             target_files.sort()
             reference_files.sort()
-            print(target_files)
-            print()
-            print(reference_files)
-            if target_files == reference_files:
-                print("Equal")
-            else:
-                print("Not Equal")
+
+            counter = 0
+            sti_total = 0.0
+
+            for audio in reference_files:
+                target_Audio, degrRate = readwav(args.target_dir + str(audio))
+                reference_audio, refRate = readwav(args.reference_dir + str(audio))
+
+                counter += 1
+                STI = stiFromAudio(reference_audio, target_Audio, refRate)
+                sti_total += STI
+                print(counter, " ", STI)
+                
+            print("Average STI: ", sti_total/len(reference_files))
             
 
         elif selected_option_index == 1:
