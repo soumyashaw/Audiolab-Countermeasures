@@ -28,6 +28,8 @@ def main():
 
             target_files = os.listdir(args.target_dir)
             reference_files = os.listdir(args.reference_dir)
+            target_files.sort()
+            reference_files.sort()
             print(target_files)
             print()
             print(reference_files)
