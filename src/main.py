@@ -28,7 +28,7 @@ def main():
 
             target_files = os.listdir(args.target_dir)
             reference_files = os.listdir(args.reference_dir)
-            print(len(target_files), len(reference_files))
+            print(target_files, reference_files)
             if target_files == reference_files:
                 print("Equal")
             else:
