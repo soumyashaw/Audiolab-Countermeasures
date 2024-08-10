@@ -26,8 +26,8 @@ def main():
             print("Target Directory: ", args.target_dir)
             print("Reference Directory: ", args.reference_dir)
 
-            target_files = os.listdir(args.target_dir).sort()
-            reference_files = os.listdir(args.reference_dir).sort()
+            target_files = os.listdir(args.target_dir)
+            reference_files = os.listdir(args.reference_dir)
             print(target_files)
             print()
             print(reference_files)
