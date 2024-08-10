@@ -217,7 +217,7 @@ def octaveBandFilter(audio, hz,
             filtOut = lfilter(b1, a1, audio)
 
         filtOut = array(filtOut)**2
-        b = firwin(hammingLength, 25.0, nyq=nyquist)
+        b = firwin(int(hammingLength), 25.0, fs=2*nyquist)
         filtOut = lfilter(b, 1, filtOut)
         filtOut = filtOut * -1.0
 
