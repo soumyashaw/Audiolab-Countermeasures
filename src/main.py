@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import os
+from scipy.io import wavfile
+from pesq import pesq
 import argparse
 from simple_term_menu import TerminalMenu
 from package_name.sti import stiFromAudio, readwav
@@ -35,13 +37,12 @@ def main():
             sti_total = 0.0
 
             for audio in reference_files:
-                target_Audio, degrRate = readwav(args.target_dir + str(audio))
-                reference_audio, refRate = readwav(args.reference_dir + str(audio))
+                degrRate, target_Audio = wavfile.read(args.target_dir + str(audio))
+                refRate, reference_audio = wavfile.read(args.reference_dir + str(audio))
 
                 counter += 1
-                STI = stiFromAudio(reference_audio, target_Audio, refRate)
-                sti_total += STI
-                print(counter, " ", STI)
+                PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
+                print(counter, " ", PESQ)
                 
             print("Average STI: ", sti_total/len(reference_files))
             
