@@ -36,7 +36,7 @@ def main():
             reference_files.sort()
 
             counter = 0
-            sti_total = 0.0
+            pesq_total = 0.0
 
             for audio in tqdm(reference_files):
                 degrRate, target_Audio = wavfile.read(args.target_dir + str(audio))
@@ -53,10 +53,17 @@ def main():
                 refRate = target_rate
 
                 counter += 1
-                PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
-                print(counter, " ", PESQ)
+                try:
+                    PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
+                    pesq_total += PESQ
+                    print(counter, " ", PESQ)
+
+                except:
+                    print("Error in PESQ calculation")
+                    pesq_total += 0.0
+                    continue
                 
-            print("Average STI: ", sti_total/len(reference_files))
+            print("Average STI: ", pesq_total/len(reference_files))
             
 
         elif selected_option_index == 1:
