@@ -64,7 +64,7 @@ def main():
                     pesq_total += 0.0
                     continue
                 
-            print("Average STI: ", pesq_total/len(reference_files))
+            print("Average PESQ: ", pesq_total/len(reference_files))
             
 
         elif selected_option_index == 1:
