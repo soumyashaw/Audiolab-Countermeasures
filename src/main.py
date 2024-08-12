@@ -172,12 +172,12 @@ def main():
 
                         output_files.append("g" + str(SNR_levels_dB[i]) + "dB_" + str(audio))
 
-                        print(input_audio, output_audio, desired_snr_dB)
+                        #print(input_audio, output_audio, desired_snr_dB)
 
-                        #noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
+                        noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
 
                         # Save the output with noise to a new file
-                        #sf.write(output_audio, noisy_signal, sample_rate)
+                        sf.write(output_audio, noisy_signal, sample_rate)
                 
                 
                 
