@@ -1,18 +1,18 @@
 #!/usr/bin/python
 
+# Imports
 import os
+import argparse
+from pesq import pesq
 from tqdm import tqdm
 from scipy.io import wavfile
 from scipy.signal import resample
-from pesq import pesq
-import argparse
 from simple_term_menu import TerminalMenu
-from package_name.sti import stiFromAudio, readwav
 
 def main():
     # Define the menu options
     menu_options = [
-        "Calculate Average STI",
+        "Calculate Average PESQ",
         "Trial 2",
         "Exit",
     ]
@@ -26,7 +26,8 @@ def main():
 
         # Perform actions based on the selected option
         if selected_option_index == 0:
-            print("Calculating Average STI...")
+            print(" "*50 + "Calculating Average PESQ" + " "*50)
+            print()
             print("Target Directory: ", args.target_dir)
             print("Reference Directory: ", args.reference_dir)
 
@@ -58,8 +59,8 @@ def main():
                     pesq_total += PESQ
                     #print(counter, " ", PESQ)
 
-                except:
-                    print("Error in PESQ calculation")
+                except Exception as e:
+                    print("Error in PESQ calculation:", e)
                     pesq_total += 0.0
                     continue
                 
