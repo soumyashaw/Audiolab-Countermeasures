@@ -2,6 +2,7 @@
 
 import os
 from scipy.io import wavfile
+from scipy.signal import resample
 from pesq import pesq
 import argparse
 from simple_term_menu import TerminalMenu
@@ -39,6 +40,14 @@ def main():
             for audio in reference_files:
                 degrRate, target_Audio = wavfile.read(args.target_dir + str(audio))
                 refRate, reference_audio = wavfile.read(args.reference_dir + str(audio))
+
+                target_rate = 16000
+
+                number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
+                target_Audio = resample(target_Audio, number_of_samples)
+
+                number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
+                reference_audio = resample(reference_audio, number_of_samples)
 
                 counter += 1
                 PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
