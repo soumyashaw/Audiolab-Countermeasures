@@ -69,6 +69,34 @@ def make_directory(directory):
             os.makedirs(directory, exist_ok=True)
     return
 
+def calculate_avg_pesq(target_audio_list, target_dir, reference_dir, prefix = ""):
+    for audio in tqdm(target_audio_list, desc="Calculating Average PESQ"):
+        degrRate, target_Audio = wavfile.read(args.target_dir + prefix + str(audio))
+        refRate, reference_audio = wavfile.read(args.reference_dir + str(audio))
+
+        target_rate = 16000
+
+        if degrRate != target_rate:
+            number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
+            target_Audio = resample(target_Audio, number_of_samples)
+            degrRate = target_rate
+
+        if refRate != target_rate:
+            number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
+            reference_audio = resample(reference_audio, number_of_samples)
+            refRate = target_rate
+
+        try:
+            PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
+            pesq_total += PESQ
+
+        except Exception as e:
+            print("Error in PESQ calculation:", e)
+            pesq_total += 0.0
+            continue
+        
+    return pesq_total/len(target_audio_list)
+
 def main():
     # Define the menu options
     menu_options = [
@@ -96,7 +124,6 @@ def main():
             target_files.sort()
             reference_files.sort()
 
-            counter = 0
             pesq_total = 0.0
 
             for audio in tqdm(reference_files):
@@ -105,19 +132,19 @@ def main():
 
                 target_rate = 16000
 
-                number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
-                target_Audio = resample(target_Audio, number_of_samples)
-                degrRate = target_rate
+                if degrRate != target_rate:
+                    number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
+                    target_Audio = resample(target_Audio, number_of_samples)
+                    degrRate = target_rate
 
-                number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
-                reference_audio = resample(reference_audio, number_of_samples)
-                refRate = target_rate
+                if refRate != target_rate:
+                    number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
+                    reference_audio = resample(reference_audio, number_of_samples)
+                    refRate = target_rate
 
-                counter += 1
                 try:
                     PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
                     pesq_total += PESQ
-                    #print(counter, " ", PESQ)
 
                 except Exception as e:
                     print("Error in PESQ calculation:", e)
@@ -178,25 +205,13 @@ def main():
 
                         # Save the output with noise to a new file
                         sf.write(output_audio, noisy_signal, sample_rate)
-                
-                
-                
-                """for audio in audioFiles:
-                    input_audio = parent_dir + str(audio)
-                    output_audio = target_dir + str(audio)
-                    desired_snr_dB = 20
 
-                    noisy_signal, sample_rate = addWhiteNoise(input_audio, desired_snr_dB)
+                    print("Target Directory: ", target_dir)
+                    print("Reference Directory: ", args.reference_dir)
+                    avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
 
-                    # Save the output with noise to a new file
-                    sf.write(output_audio, noisy_signal, sample_rate)"""
+                    print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
 
-
-
-
-                
-                for SNR in SNR_levels_dB:
-                    print("SNR", SNR)
 
             elif augment_data_selected_option_index == 1:
                 print("Adding Ambient Noise")
