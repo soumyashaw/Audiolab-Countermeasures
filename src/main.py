@@ -128,6 +128,8 @@ def main():
             
 
         elif selected_option_index == 1:
+            output_files = []
+
             augment_data_menu_options = [
                 "Add Gaussian Noise",
                 "Add Ambient Noise",
@@ -146,6 +148,7 @@ def main():
                 print()
 
                 SNR_levels_dB = [5, 10, 15, 20]
+                SNR_levels_dB.sort(reverse=True)
 
                 reference_files = os.listdir(args.reference_dir)
 
@@ -164,8 +167,10 @@ def main():
                     # Add Gaussian Noise to the audio files
                     for audio in audio_files[i]:
                         input_audio = args.reference_dir + str(audio)
-                        output_audio = target_dir + str(audio)
+                        output_audio = target_dir + "g" + str(SNR_levels_dB[i]) + "dB_" + str(audio)
                         desired_snr_dB = SNR_levels_dB[i]
+
+                        output_files.append("g" + str(SNR_levels_dB[i]) + "dB_" + str(audio))
 
                         print(input_audio, output_audio, desired_snr_dB)
 
@@ -189,7 +194,7 @@ def main():
 
 
 
-                SNR_levels_dB.sort(reverse=True)
+                
                 for SNR in SNR_levels_dB:
                     print("SNR", SNR)
 
