@@ -2,6 +2,7 @@
 
 # Imports
 import os
+import shutil
 import argparse
 from pesq import pesq
 from tqdm import tqdm
@@ -82,7 +83,28 @@ def main():
             augment_data_selected_option_index = augment_data_menu.show()
 
             if augment_data_selected_option_index == 0:
-                print("Adding Gaussian Noise")
+                print("\033[91mAdding Gaussian Noise\033[0m")
+
+                SNR_levels_dB = [5, 10, 15, 20]
+
+                # Check if the directory to store the augmented data exists
+                if not os.path.exists("augmented_data/gaussian_noise"):
+                    # Make a directory to store the augmented data
+                    os.makedirs("augmented_data/gaussian_noise", exist_ok=True)
+                else:
+                    print("Directory already exists. Confirm 'y' to overwrite the data.")
+                    confirm = input("Do you want to overwrite the data? (y/n): ")
+                    if confirm.lower() == "y":
+                        shutil.rmtree('augmented_data/gaussian_noise')
+                        os.makedirs("augmented_data/gaussian_noise", exist_ok=True)
+                    else:
+                        continue
+                
+                # Add Gaussian Noise to the audio files
+                SNR_levels_dB.sort(reverse=True)
+                for SNR in SNR_levels_dB:
+                    print("SNR", SNR)
+
             elif augment_data_selected_option_index == 1:
                 print("Adding Ambient Noise")
             elif augment_data_selected_option_index == 2:
