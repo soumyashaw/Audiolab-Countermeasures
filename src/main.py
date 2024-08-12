@@ -71,8 +71,8 @@ def make_directory(directory):
 
 def calculate_avg_pesq(target_audio_list, target_dir, reference_dir, prefix = ""):
     for audio in tqdm(target_audio_list, desc="Calculating Average PESQ"):
-        degrRate, target_Audio = wavfile.read(args.target_dir + prefix + str(audio))
-        refRate, reference_audio = wavfile.read(args.reference_dir + str(audio))
+        degrRate, target_Audio = wavfile.read(target_dir + prefix + str(audio))
+        refRate, reference_audio = wavfile.read(reference_dir + str(audio))
 
         target_rate = 16000
 
@@ -210,7 +210,7 @@ def main():
 
                     print("Target Directory: ", target_dir)
                     print("Reference Directory: ", args.reference_dir)
-                    avg_pesq = calculate_avg_pesq(audio_files[i], target_dir + "augmented_data/", args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
+                    avg_pesq = calculate_avg_pesq(audio_files[i], target_dir + "../augmented_data/", args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
 
                     print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
 
