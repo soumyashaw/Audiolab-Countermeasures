@@ -160,9 +160,22 @@ def main():
                     target_dir = "../augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
                     make_directory(target_dir)
                     print("Directory created: ", target_dir)
+
+                    # Add Gaussian Noise to the audio files
+                    for audio in audio_files[i]:
+                        input_audio = args.reference_dir + str(audio)
+                        output_audio = target_dir + str(audio)
+                        desired_snr_dB = SNR_levels_dB[i]
+
+                        print(input_audio, output_audio, desired_snr_dB)
+
+                        #noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
+
+                        # Save the output with noise to a new file
+                        #sf.write(output_audio, noisy_signal, sample_rate)
                 
                 
-                # Add Gaussian Noise to the audio files
+                
                 """for audio in audioFiles:
                     input_audio = parent_dir + str(audio)
                     output_audio = target_dir + str(audio)
