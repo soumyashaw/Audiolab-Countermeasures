@@ -56,7 +56,7 @@ def main():
                 try:
                     PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
                     pesq_total += PESQ
-                    print(counter, " ", PESQ)
+                    #print(counter, " ", PESQ)
 
                 except:
                     print("Error in PESQ calculation")
