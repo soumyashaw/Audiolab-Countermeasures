@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+from tqdm import tqdm
 from scipy.io import wavfile
 from scipy.signal import resample
 from pesq import pesq
@@ -37,7 +38,7 @@ def main():
             counter = 0
             sti_total = 0.0
 
-            for audio in reference_files:
+            for audio in tqdm(reference_files):
                 degrRate, target_Audio = wavfile.read(args.target_dir + str(audio))
                 refRate, reference_audio = wavfile.read(args.reference_dir + str(audio))
 
