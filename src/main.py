@@ -94,7 +94,7 @@ def main():
             elif augment_data_selected_option_index == 5:
                 print("Adding Downsampling Effects")
             elif augment_data_selected_option_index == 6:
-                break
+                continue
 
         elif selected_option_index == 2:
             print("Exiting the program. Goodbye!")
