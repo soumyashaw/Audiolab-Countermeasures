@@ -3,6 +3,7 @@
 # Imports
 import os
 import shutil
+import random
 import librosa
 import argparse
 import numpy as np
@@ -13,7 +14,7 @@ from scipy.io import wavfile
 from scipy.signal import resample
 from simple_term_menu import TerminalMenu
 
-def addWhiteNoise(audioPath, snr_dB):
+def add_white_noise(audioPath, snr_dB):
     # Load the audio file
     signal, sr = librosa.load(audioPath, sr=None)
 
@@ -31,6 +32,42 @@ def addWhiteNoise(audioPath, snr_dB):
     noisy_signal = signal + noise
 
     return noisy_signal, sr
+
+def divide_list_randomly(lst, n):
+    #Shuffle the list to ensure randomness
+    random.shuffle(lst)
+    
+    #Determine the size of each part
+    avg = len(lst) // n
+    remainder = len(lst) % n
+
+    #Create the parts
+    parts = []
+    start = 0
+
+    for i in range(n):
+        # Determine the end index for this part
+        end = start + avg + (1 if i < remainder else 0)
+        
+        # Append the sliced part to the list of parts
+        parts.append(lst[start:end])
+        
+        # Move the start index to the next section
+        start = end
+
+    return parts
+
+def make_directory(directory):
+    if not os.path.exists(directory):
+        # Make a directory to store the augmented data
+        os.makedirs(directory, exist_ok=True)
+    else:
+        print("Directory already exists. Confirm 'y' to overwrite the data.")
+        confirm = input("Do you want to overwrite the data? (y/n): ")
+        if confirm.lower() == "y":
+            shutil.rmtree(directory)
+            os.makedirs(directory, exist_ok=True)
+    return
 
 def main():
     # Define the menu options
@@ -111,23 +148,19 @@ def main():
                 SNR_levels_dB = [5, 10, 15, 20]
 
                 reference_files = os.listdir(args.reference_dir)
-                reference_files.sort()
 
                 audio_files_for_each_partition = len(reference_files) // len(SNR_levels_dB)
                 print("Number of audio files for each SNR level: ", audio_files_for_each_partition)
 
+                # Divide the list of audio files into partitions
+                audio_files = divide_list_randomly(reference_files, len(SNR_levels_dB))
+
                 # Check the existence of directory to store the augmented data exists
-                """if not os.path.exists("augmented_data/gaussian_noise"):
-                    # Make a directory to store the augmented data
-                    os.makedirs("augmented_data/gaussian_noise", exist_ok=True)
-                else:
-                    print("Directory already exists. Confirm 'y' to overwrite the data.")
-                    confirm = input("Do you want to overwrite the data? (y/n): ")
-                    if confirm.lower() == "y":
-                        shutil.rmtree('augmented_data/gaussian_noise')
-                        os.makedirs("augmented_data/gaussian_noise", exist_ok=True)
-                    else:
-                        continue"""
+                for i in range(len(SNR_levels_dB)):
+                    target_dir = "../augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
+                    make_directory(target_dir)
+                    print("Directory created: ", target_dir)
+                
                 
                 # Add Gaussian Noise to the audio files
                 """for audio in audioFiles:
