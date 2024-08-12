@@ -177,6 +177,8 @@ def main():
                 SNR_levels_dB = [5, 10, 15, 20]
                 SNR_levels_dB.sort(reverse=True)
 
+                os.chdir(args.reference_dir)
+
                 reference_files = os.listdir(args.reference_dir)
 
                 audio_files_for_each_partition = len(reference_files) // len(SNR_levels_dB)
