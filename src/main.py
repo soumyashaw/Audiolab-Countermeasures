@@ -117,7 +117,7 @@ def main():
                 print("Number of audio files for each SNR level: ", audio_files_for_each_partition)
 
                 # Check the existence of directory to store the augmented data exists
-                if not os.path.exists("augmented_data/gaussian_noise"):
+                """if not os.path.exists("augmented_data/gaussian_noise"):
                     # Make a directory to store the augmented data
                     os.makedirs("augmented_data/gaussian_noise", exist_ok=True)
                 else:
@@ -127,10 +127,10 @@ def main():
                         shutil.rmtree('augmented_data/gaussian_noise')
                         os.makedirs("augmented_data/gaussian_noise", exist_ok=True)
                     else:
-                        continue
+                        continue"""
                 
                 # Add Gaussian Noise to the audio files
-                for audio in audioFiles:
+                """for audio in audioFiles:
                     input_audio = parent_dir + str(audio)
                     output_audio = target_dir + str(audio)
                     desired_snr_dB = 20
@@ -138,7 +138,7 @@ def main():
                     noisy_signal, sample_rate = addWhiteNoise(input_audio, desired_snr_dB)
 
                     # Save the output with noise to a new file
-                    sf.write(output_audio, noisy_signal, sample_rate)
+                    sf.write(output_audio, noisy_signal, sample_rate)"""
 
 
 
