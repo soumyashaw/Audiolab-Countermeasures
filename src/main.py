@@ -45,9 +45,11 @@ def main():
 
                 number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
                 target_Audio = resample(target_Audio, number_of_samples)
+                degrRate = target_rate
 
                 number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
                 reference_audio = resample(reference_audio, number_of_samples)
+                refRate = target_rate
 
                 counter += 1
                 PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
