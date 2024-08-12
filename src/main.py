@@ -165,7 +165,7 @@ def main():
                     print("Directory created: ", target_dir)
 
                     # Add Gaussian Noise to the audio files
-                    for audio in audio_files[i]:
+                    for audio in tqdm(audio_files[i], desc="Adding Gaussian Noise to Partition " + str(i+1)):
                         input_audio = args.reference_dir + str(audio)
                         output_audio = target_dir + "g" + str(SNR_levels_dB[i]) + "dB_" + str(audio)
                         desired_snr_dB = SNR_levels_dB[i]
