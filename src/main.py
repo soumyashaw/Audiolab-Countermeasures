@@ -13,7 +13,7 @@ def main():
     # Define the menu options
     menu_options = [
         "Calculate Average PESQ",
-        "Trial 2",
+        "Augment Data for Training",
         "Exit",
     ]
 
@@ -68,8 +68,33 @@ def main():
             
 
         elif selected_option_index == 1:
-            from datetime import datetime
-            print(f"Current date and time: {datetime.now()}")
+            augment_data_menu_options = [
+                "Add Gaussian Noise",
+                "Add Ambient Noise",
+                "Add Reverberation",
+                "Add Muffling (Volume Reduction)",
+                "Add Codec Losses",
+                "Add Downsampling Effects",
+                "Go Back"
+            ]
+
+            augment_data_menu = TerminalMenu(augment_data_menu_options, title="Augment Data Menu", clear_screen=True)
+            augment_data_selected_option_index = augment_data_menu.show()
+
+            if augment_data_selected_option_index == 0:
+                print("Adding Gaussian Noise")
+            elif augment_data_selected_option_index == 1:
+                print("Adding Ambient Noise")
+            elif augment_data_selected_option_index == 2:
+                print("Adding Reverberation")
+            elif augment_data_selected_option_index == 3:
+                print("Adding Muffling (Volume Reduction)")
+            elif augment_data_selected_option_index == 4:
+                print("Adding Codec Losses")
+            elif augment_data_selected_option_index == 5:
+                print("Adding Downsampling Effects")
+            elif augment_data_selected_option_index == 6:
+                break
 
         elif selected_option_index == 2:
             print("Exiting the program. Goodbye!")
