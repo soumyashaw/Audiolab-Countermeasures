@@ -3,12 +3,34 @@
 # Imports
 import os
 import shutil
+import librosa
 import argparse
+import numpy as np
 from pesq import pesq
 from tqdm import tqdm
+import soundfile as sf
 from scipy.io import wavfile
 from scipy.signal import resample
 from simple_term_menu import TerminalMenu
+
+def addWhiteNoise(audioPath, snr_dB):
+    # Load the audio file
+    signal, sr = librosa.load(audioPath, sr=None)
+
+    # Calculate the power of the signal
+    signal_power = np.sum(signal ** 2) / len(signal)
+
+    # Calculate the noise power based on the desired SNR
+    snr_linear = 10 ** (snr_dB / 10.0)
+    noise_power = signal_power / snr_linear
+
+    # Generate white Gaussian noise with the same length as the signal
+    noise = np.random.normal(scale=np.sqrt(noise_power), size=len(signal))
+
+    # Add the noise to the signal
+    noisy_signal = signal + noise
+
+    return noisy_signal, sr
 
 def main():
     # Define the menu options
@@ -84,10 +106,17 @@ def main():
 
             if augment_data_selected_option_index == 0:
                 print("\033[91mAdding Gaussian Noise\033[0m")
+                print()
 
                 SNR_levels_dB = [5, 10, 15, 20]
 
-                # Check if the directory to store the augmented data exists
+                reference_files = os.listdir(args.reference_dir)
+                reference_files.sort()
+
+                audio_files_for_each_partition = len(reference_files) // len(SNR_levels_dB)
+                print("Number of audio files for each SNR level: ", audio_files_for_each_partition)
+
+                # Check the existence of directory to store the augmented data exists
                 if not os.path.exists("augmented_data/gaussian_noise"):
                     # Make a directory to store the augmented data
                     os.makedirs("augmented_data/gaussian_noise", exist_ok=True)
@@ -101,6 +130,19 @@ def main():
                         continue
                 
                 # Add Gaussian Noise to the audio files
+                for audio in audioFiles:
+                    input_audio = parent_dir + str(audio)
+                    output_audio = target_dir + str(audio)
+                    desired_snr_dB = 20
+
+                    noisy_signal, sample_rate = addWhiteNoise(input_audio, desired_snr_dB)
+
+                    # Save the output with noise to a new file
+                    sf.write(output_audio, noisy_signal, sample_rate)
+
+
+
+
                 SNR_levels_dB.sort(reverse=True)
                 for SNR in SNR_levels_dB:
                     print("SNR", SNR)
