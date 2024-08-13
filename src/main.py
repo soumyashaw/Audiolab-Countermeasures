@@ -290,29 +290,10 @@ def main():
                     reference_audio = resample(reference_audio, number_of_samples)
                     sr = target_rate
 
-
-
-                db_reduction = -1
-                reduction_factor = 10 ** (db_reduction / 20)
-
-                volume_reduced_audio = reference_audio * reduction_factor
-
-                print(find_volume(reference_audio))
-                print(find_volume(volume_reduced_audio))
-
-
-                db_reduction = -10
-                reduction_factor = 10 ** (db_reduction / 20)
-
-                volume_reduced_audio = reference_audio * reduction_factor
-
-                print(find_volume(volume_reduced_audio))
-
-
                 vol_dB = 100.0
                 dB_reduced = 1
 
-                while vol_dB > args.vol_threshold:
+                while vol_dB > args.volume_threshold:
                     db_reduction = -1 * dB_reduced
                     reduction_factor = 10 ** (db_reduction / 20)
 
