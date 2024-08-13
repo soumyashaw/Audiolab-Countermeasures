@@ -206,15 +206,15 @@ def main():
                         # Save the output with noise to a new file
                         sf.write(output_audio, noisy_signal, sample_rate)
 
-                    print("Target Directory: ", target_dir)
+                    """print("Target Directory: ", target_dir)
                     print("Reference Directory: ", args.reference_dir)
-                    print("Current Working Directory:", os.getcwd())
+                    print("Current Working Directory:", os.getcwd())"""
                     os.chdir("../")
                     target_dir = os.getcwd() + "/augmented_data/"
-                    print("Target Directory:", target_dir)
-                    #avg_pesq = calculate_avg_pesq(audio_files[i], target_dir + "augmented_data/", args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
+                    #print("Target Directory:", target_dir)
+                    avg_pesq = calculate_avg_pesq(audio_files[i], target_dir + "augmented_data/", args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
 
-                    #print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
+                    print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
 
 
             elif augment_data_selected_option_index == 1:
