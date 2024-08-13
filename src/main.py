@@ -258,15 +258,29 @@ def main():
                     os.rmdir(path)
 
             elif augment_data_selected_option_index == 1:
-                print("Adding Ambient Noise")
+                print(" "*50 + "\033[91mAdding Ambient Noise\033[0m")
+                print()
+
             elif augment_data_selected_option_index == 2:
-                print("Adding Reverberation")
+                print(" "*50 + "\033[91mAdding Reverberation\033[0m")
+                print()
+
             elif augment_data_selected_option_index == 3:
-                print("Adding Muffling (Volume Reduction)")
+                print(" "*50 + "\033[91mAdding Muffling (Volume Reduction)\033[0m")
+                print()
+
+                audio_files = os.listdir(args.reference_dir)
+                audio = random.choice(audio_files)
+                print(audio)
+
             elif augment_data_selected_option_index == 4:
-                print("Adding Codec Losses")
+                print(" "*50 + "\033[91mAdding Codec Losses\033[0m")
+                print()
+
             elif augment_data_selected_option_index == 5:
-                print("Adding Downsampling Effects")
+                print(" "*50 + "\033[91mAdding Downsampling Effects\033[0m")
+                print()
+
             elif augment_data_selected_option_index == 6:
                 continue
 
