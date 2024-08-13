@@ -71,6 +71,8 @@ def make_directory(directory):
 
 def calculate_avg_pesq(target_audio_list, target_dir, reference_dir, prefix = ""):
 
+    pesq_total = 0.0
+
     for audio in tqdm(target_audio_list, desc="Calculating Average PESQ"):
         degrRate, target_Audio = wavfile.read(target_dir + prefix + str(audio))
         refRate, reference_audio = wavfile.read(reference_dir + str(audio))
