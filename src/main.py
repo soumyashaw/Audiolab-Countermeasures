@@ -231,6 +231,9 @@ def main():
 
                 print("Gaussian Noise added successfully!")
 
+                # Cleanup
+                print("Directories Made: ", directories_made)
+
             elif augment_data_selected_option_index == 1:
                 print("Adding Ambient Noise")
             elif augment_data_selected_option_index == 2:
