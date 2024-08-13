@@ -233,6 +233,7 @@ def main():
 
                 # Cleanup
                 print("Directories Made: ", directories_made)
+                print("Current Directory: ", os.getcwd())
 
             elif augment_data_selected_option_index == 1:
                 print("Adding Ambient Noise")
