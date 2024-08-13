@@ -302,7 +302,7 @@ def main():
                     vol_dB = find_volume(volume_reduced_audio)
                     print("Volume in dB: ", vol_dB, dB_reduced)
 
-                    if PESQ >= args.pesq_threshold:
+                    if vol_dB >= args.volume_threshold:
                         dB_reduced += 1
 
                 
