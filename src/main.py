@@ -233,7 +233,12 @@ def main():
 
                 # Cleanup
                 print("Directories Made: ", directories_made)
-                print("Current Directory: ", os.getcwd())
+                current_path = os.getcwd() + "/augmented_data/"
+                make_directory(current_path + "gaussian_noise/")
+                for path in directories_made:
+                    for file in os.listdir(path):
+                        shutil.move(path + file, current_path + "gaussian_noise/" + file)
+                    os.rmdir(path)
 
             elif augment_data_selected_option_index == 1:
                 print("Adding Ambient Noise")
