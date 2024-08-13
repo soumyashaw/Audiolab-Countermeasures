@@ -178,12 +178,12 @@ def main():
                 print()
 
                 flag_fault = True
+                SNR_levels_dB = [5, 10, 15, 20]
+                SNR_levels_dB.sort(reverse=True)
 
                 while flag_fault:
                     directories_made = []
-                    SNR_levels_dB = [5, 10, 15, 20]
-                    SNR_levels_dB.sort(reverse=True)
-
+                    
                     os.chdir(args.reference_dir)
 
                     reference_files = os.listdir(args.reference_dir)
