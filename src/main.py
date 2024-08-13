@@ -321,7 +321,7 @@ def main():
 
                     # Create a new directory to store the augmented data
                     os.chdir("../")
-                    target_dir = os.getcwd() + "/augmented_data/vol_reduction_" + str(vol_dBs[i]) + "dB/"
+                    target_dir = os.getcwd() + "/augmented_data/vol_reduction_" + str(int(vol_dBs[i])) + "dB/"
                     make_directory(target_dir)
                     directories_made.append(target_dir)
 
@@ -329,7 +329,7 @@ def main():
                     for audio in tqdm(audio_files[i], desc="Reducing Volume in Partition " + str(i+1)):
                         input_audio = args.reference_dir + str(audio)
                         # Append the identifier string to output audio file
-                        output_audio = target_dir + "vol" + str(vol_dBs[i]) + "dB_" + str(audio)
+                        output_audio = target_dir + "vol" + str(int(vol_dBs[i])) + "dB_" + str(audio)
 
                         reference_audio, sr = librosa.load(input_audio, sr=None)
 
