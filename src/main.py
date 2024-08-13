@@ -174,7 +174,7 @@ def main():
             augment_data_selected_option_index = augment_data_menu.show()
 
             if augment_data_selected_option_index == 0:
-                print("\033[91mAdding Gaussian Noise\033[0m")
+                print(" "*50 + "\033[91mAdding Gaussian Noise\033[0m")
                 print()
 
                 flag_fault = True
@@ -247,7 +247,7 @@ def main():
 
                         print()
 
-                print("\092[91mGaussian Noise added successfully!\092[0m")
+                print("\033[92mGaussian Noise added successfully!\033[0m")
 
                 # Cleanup
                 print("Directories Made: ", directories_made)
