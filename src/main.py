@@ -117,7 +117,7 @@ def main():
 
         # Perform actions based on the selected option
         if selected_option_index == 0:
-            print(" "*50 + "Calculating Average PESQ" + " "*50)
+            print(" "*50 + "\033[91mCalculating Average PESQ\033[0m" + " "*50)
             print()
             print("Target Directory: ", args.target_dir)
             print("Reference Directory: ", args.reference_dir)
@@ -154,7 +154,7 @@ def main():
                     pesq_total += 0.0
                     continue
                 
-            print("Average PESQ: ", pesq_total/len(reference_files))
+            print("\033[91mAverage PESQ\033[0m: ", pesq_total/len(reference_files))
             
 
         elif selected_option_index == 1:
@@ -181,55 +181,73 @@ def main():
                 SNR_levels_dB = [5, 10, 15, 20]
                 SNR_levels_dB.sort(reverse=True)
 
+                # Continue to augment the data until the PESQ threshold is met
                 while flag_fault:
+                    # Empty list to store the Gaussian Noise directories with particular SNR levels
                     directories_made = []
                     
+                    # Change the directory to the reference directory
                     os.chdir(args.reference_dir)
 
+                    # List all the audio files in the reference directory (original audio files)
                     reference_files = os.listdir(args.reference_dir)
 
-                    # Divide the list of audio files into partitions
+                    # Divide the list of audio files into n partitions (based on the number of SNR levels)
                     audio_files = divide_list_randomly(reference_files, len(SNR_levels_dB))
 
                     # Check the existence of directory to store the augmented data exists
                     for i in range(len(SNR_levels_dB)):
+                        # Change the directory to the reference directory
                         os.chdir(args.reference_dir)
+
+                        # Create a new directory to store the augmented data
                         os.chdir("../")
                         target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
                         make_directory(target_dir)
                         directories_made.append(target_dir)
-                        print("Directory created: ", target_dir)
 
-                        # Add Gaussian Noise to the audio files
+                        # Add Gaussian Noise to the audio files with given SNR level
                         for audio in tqdm(audio_files[i], desc="Adding Gaussian Noise to Partition " + str(i+1)):
                             input_audio = args.reference_dir + str(audio)
+                            # Append the identifier string to output audio file
                             output_audio = target_dir + "g" + str(SNR_levels_dB[i]) + "dB_" + str(audio)
                             desired_snr_dB = SNR_levels_dB[i]
 
+                            # Append the output audio file to the list for text file creation
                             output_files.append("g" + str(SNR_levels_dB[i]) + "dB_" + str(audio))
 
+                            # Call the function to add white noise to the audio file
                             noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
 
                             # Save the output with noise to a new file
                             sf.write(output_audio, noisy_signal, sample_rate)
 
+                        # Calculate the average PESQ for the augmented data
                         target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
                         avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
 
+                        # Print the average PESQ for the SNR level
                         print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
+
+                        # Check if the average PESQ is below the threshold
                         if avg_pesq < args.pesq_threshold:
-                            print("Average PESQ is below the threshold. Augmenting with modified SNR levels.")
+                            # Remove the SNR level from the list
+                            print("\033[91mAverage PESQ is below the threshold.\033[0m Augmenting with modified SNR levels.")
                             SNR_levels_dB.pop()
-                            print("SNR Levels:", SNR_levels_dB)
+
+                            # Remove the directories made
                             for path in directories_made:
                                 shutil.rmtree(path)
+
+                            # Set the flag to True to continue augmenting the data
                             flag_fault = True
                         else:
+                            # Set the flag to False to stop augmenting the data
                             flag_fault = False
 
                         print()
 
-                print("Gaussian Noise added successfully!")
+                print("\092[91mGaussian Noise added successfully!\092[0m")
 
                 # Cleanup
                 print("Directories Made: ", directories_made)
