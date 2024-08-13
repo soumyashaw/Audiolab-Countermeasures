@@ -219,6 +219,7 @@ def main():
                         print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
                         if avg_pesq < args.pesq_threshold:
                             print("Average PESQ is below the threshold. Augmenting with modified SNR levels.")
+                            SNR_levels_dB.pop()
                             print("SNR Levels:", SNR_levels_dB)
                             for path in directories_made:
                                 shutil.rmtree(path)
