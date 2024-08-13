@@ -100,6 +100,12 @@ def calculate_avg_pesq(target_audio_list, target_dir, reference_dir, prefix = ""
         
     return pesq_total/len(target_audio_list)
 
+def find_volume(audio):
+    rms = np.sqrt(np.mean(audio**2))
+
+    # Convert the RMS value to decibels (dB)
+    return 20 * np.log10(rms)
+
 def main():
     # Define the menu options
     menu_options = [
@@ -291,8 +297,8 @@ def main():
 
                 volume_reduced_audio = reference_audio * reduction_factor
 
-                PESQ = pesq(sr, reference_audio, volume_reduced_audio, 'wb')
-                print("PESQ(-1): ", PESQ)
+                print(find_volume(reference_audio))
+                print(find_volume(volume_reduced_audio))
 
 
                 db_reduction = -10
@@ -300,24 +306,8 @@ def main():
 
                 volume_reduced_audio = reference_audio * reduction_factor
 
-                PESQ = pesq(sr, reference_audio, volume_reduced_audio, 'wb')
-                print("PESQ(-10): ", PESQ)
+                print(find_volume(volume_reduced_audio))
 
-
-                PESQ = 5.0
-                dB_reduced = 1
-
-                while PESQ > args.pesq_threshold:
-                    db_reduction = -1 * dB_reduced
-                    reduction_factor = 10 ** (db_reduction / 20)
-
-                    volume_reduced_audio = reference_audio * reduction_factor
-
-                    PESQ = pesq(sr, reference_audio, volume_reduced_audio, 'wb')
-                    print("PESQ: ", PESQ, dB_reduced)
-
-                    if PESQ >= args.pesq_threshold:
-                        dB_reduced += 1
 
                 
 
