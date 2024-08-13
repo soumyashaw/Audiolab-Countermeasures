@@ -223,8 +223,12 @@ def main():
                             print("SNR Levels:", SNR_levels_dB)
                             for path in directories_made:
                                 shutil.rmtree(path)
+                            flag_fault = True
                         else:
                             flag_fault = False
+
+                        print()
+
                 print("Gaussian Noise added successfully!")
 
             elif augment_data_selected_option_index == 1:
