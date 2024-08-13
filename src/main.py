@@ -182,9 +182,6 @@ def main():
 
                 reference_files = os.listdir(args.reference_dir)
 
-                audio_files_for_each_partition = len(reference_files) // len(SNR_levels_dB)
-                print("Number of audio files for each SNR level: ", audio_files_for_each_partition)
-
                 # Divide the list of audio files into partitions
                 audio_files = divide_list_randomly(reference_files, len(SNR_levels_dB))
 
@@ -211,6 +208,7 @@ def main():
 
                     print("Target Directory: ", args.target_dir)
                     print("Reference Directory: ", args.reference_dir)
+                    print("Current Working Directory:", os.getcwd())
                     avg_pesq = calculate_avg_pesq(audio_files[i], args.target_dir + "../augmented_data/", args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
 
                     print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
