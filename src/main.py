@@ -277,7 +277,6 @@ def main():
 
                 audio_files = os.listdir(args.reference_dir)
                 audio = random.choice(audio_files)
-                print(audio)
 
                 # Load the audio file
                 reference_audio, sr = librosa.load(args.reference_dir + audio, sr=None)
@@ -305,6 +304,7 @@ def main():
                         dB_reduced += 1
 
                 vol_dBs = [float(i) for i in range(1, dB_reduced)]
+                print("vol_dBs", vol_dBs)
                 
                 directories_made = []
 
@@ -313,6 +313,7 @@ def main():
 
                 # Divide the list of audio files into n partitions (based on the number of SNR levels)
                 audio_files = divide_list_randomly(reference_files, len(vol_dBs))
+                print("audio_files", len(audio_files))
 
                 # Check the existence of directory to store the augmented data exists
                 for i in range(len(vol_dBs)):
@@ -384,6 +385,6 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/reverbEcho/")
     parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/TrialData/OriginalData/")
     parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.0)
-    parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-34)
+    parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-27)
     args = parser.parse_args()
     main()
