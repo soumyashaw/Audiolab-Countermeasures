@@ -327,7 +327,7 @@ def main():
                     make_directory(target_dir)
                     directories_made.append(target_dir)
 
-                    # Add Gaussian Noise to the audio files with given SNR level
+                    # Reduce the volume of the audio files with given dB levels
                     for audio in tqdm(audio_files[i], desc="Reducing Volume in Partition " + str(i+1)):
                         input_audio = args.reference_dir + str(audio)
                         # Append the identifier string to output audio file
@@ -353,15 +353,6 @@ def main():
                     for file in os.listdir(path):
                         shutil.move(path + file, current_path + "volume_reduced/" + file)
                     os.rmdir(path)
-
-
-
-
-                
-
-                
-
-
 
             elif augment_data_selected_option_index == 4:
                 print(" "*50 + "\033[91mAdding Codec Losses\033[0m")
