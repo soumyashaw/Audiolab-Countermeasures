@@ -300,10 +300,14 @@ def main():
                     volume_reduced_audio = reference_audio * reduction_factor
 
                     vol_dB = find_volume(volume_reduced_audio)
-                    print("Volume in dB: ", vol_dB, dB_reduced)
 
                     if vol_dB >= args.volume_threshold:
                         dB_reduced += 1
+
+                vol_dBs = [float(i) for i in range(1, dB_reduced + 1)]
+                print("Volume Reduction Levels: ", vol_dBs)
+
+                
 
                 
 
