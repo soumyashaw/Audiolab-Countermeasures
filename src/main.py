@@ -189,7 +189,8 @@ def main():
 
                 # Check the existence of directory to store the augmented data exists
                 for i in range(len(SNR_levels_dB)):
-                    target_dir = "../augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
+                    os.chdir("../")
+                    target_dir = "augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
                     make_directory(target_dir)
                     print("Directory created: ", target_dir)
 
@@ -208,10 +209,10 @@ def main():
                         # Save the output with noise to a new file
                         sf.write(output_audio, noisy_signal, sample_rate)
 
-                    """print("Target Directory: ", target_dir)
+                    print("Target Directory: ", target_dir)
                     print("Reference Directory: ", args.reference_dir)
-                    print("Current Working Directory:", os.getcwd())"""
-                    os.chdir("../")
+                    print("Current Working Directory:", os.getcwd())
+                    
                     target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
                     #print("Target Directory:", target_dir)
                     avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
