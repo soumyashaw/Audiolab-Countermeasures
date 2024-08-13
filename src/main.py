@@ -189,6 +189,7 @@ def main():
 
                 # Check the existence of directory to store the augmented data exists
                 for i in range(len(SNR_levels_dB)):
+                    os.chdir(args.reference_dir)
                     os.chdir("../")
                     target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
                     make_directory(target_dir)
