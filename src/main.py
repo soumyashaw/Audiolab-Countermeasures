@@ -299,6 +299,7 @@ def main():
                     volume_reduced_audio = reference_audio * reduction_factor
 
                     vol_dB = find_volume(volume_reduced_audio)
+                    print("vol_dB", vol_dB)
 
                     if vol_dB >= args.volume_threshold:
                         dB_reduced += 1
