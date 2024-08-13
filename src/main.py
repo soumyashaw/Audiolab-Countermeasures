@@ -386,6 +386,6 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/reverbEcho/")
     parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/TrialData/OriginalData/")
     parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.0)
-    parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-27)
+    parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-34)
     args = parser.parse_args()
     main()
