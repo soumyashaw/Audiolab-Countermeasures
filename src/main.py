@@ -314,7 +314,7 @@ def main():
 
                 # Divide the list of audio files into n partitions (based on the number of SNR levels)
                 audio_files = divide_list_randomly(reference_files, len(vol_dBs))
-                print("audio_files", len(audio_files))
+                print("audio_files", len(audio_files), audio_files)
 
                 # Check the existence of directory to store the augmented data exists
                 for i in range(len(vol_dBs)):
@@ -344,15 +344,15 @@ def main():
 
                     print()
 
-                    print("\033[92mVolume Reduced successfully!\033[0m")
+                print("\033[92mVolume Reduced successfully!\033[0m")
 
-                    # Cleanup: Merge the directories into one
-                    current_path = os.getcwd() + "/augmented_data/"
-                    make_directory(current_path + "volume_reduced/")
-                    for path in directories_made:
-                        for file in os.listdir(path):
-                            shutil.move(path + file, current_path + "volume_reduced/" + file)
-                        os.rmdir(path)
+                # Cleanup: Merge the directories into one
+                current_path = os.getcwd() + "/augmented_data/"
+                make_directory(current_path + "volume_reduced/")
+                for path in directories_made:
+                    for file in os.listdir(path):
+                        shutil.move(path + file, current_path + "volume_reduced/" + file)
+                    os.rmdir(path)
 
 
 
