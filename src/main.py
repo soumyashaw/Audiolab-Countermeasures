@@ -177,49 +177,54 @@ def main():
                 print("\033[91mAdding Gaussian Noise\033[0m")
                 print()
 
-                SNR_levels_dB = [5, 10, 15, 20]
-                SNR_levels_dB.sort(reverse=True)
+                flag_fault = True
 
-                os.chdir(args.reference_dir)
+                while flag_fault:
+                    directories_made = []
+                    SNR_levels_dB = [5, 10, 15, 20]
+                    SNR_levels_dB.sort(reverse=True)
 
-                reference_files = os.listdir(args.reference_dir)
-
-                # Divide the list of audio files into partitions
-                audio_files = divide_list_randomly(reference_files, len(SNR_levels_dB))
-
-                # Check the existence of directory to store the augmented data exists
-                for i in range(len(SNR_levels_dB)):
                     os.chdir(args.reference_dir)
-                    os.chdir("../")
-                    target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
-                    make_directory(target_dir)
-                    print("Directory created: ", target_dir)
 
-                    # Add Gaussian Noise to the audio files
-                    for audio in tqdm(audio_files[i], desc="Adding Gaussian Noise to Partition " + str(i+1)):
-                        input_audio = args.reference_dir + str(audio)
-                        output_audio = target_dir + "g" + str(SNR_levels_dB[i]) + "dB_" + str(audio)
-                        desired_snr_dB = SNR_levels_dB[i]
+                    reference_files = os.listdir(args.reference_dir)
 
-                        output_files.append("g" + str(SNR_levels_dB[i]) + "dB_" + str(audio))
+                    # Divide the list of audio files into partitions
+                    audio_files = divide_list_randomly(reference_files, len(SNR_levels_dB))
 
-                        #print(input_audio, output_audio, desired_snr_dB)
+                    # Check the existence of directory to store the augmented data exists
+                    for i in range(len(SNR_levels_dB)):
+                        os.chdir(args.reference_dir)
+                        os.chdir("../")
+                        target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
+                        make_directory(target_dir)
+                        directories_made.append(target_dir)
+                        print("Directory created: ", target_dir)
 
-                        noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
+                        # Add Gaussian Noise to the audio files
+                        for audio in tqdm(audio_files[i], desc="Adding Gaussian Noise to Partition " + str(i+1)):
+                            input_audio = args.reference_dir + str(audio)
+                            output_audio = target_dir + "g" + str(SNR_levels_dB[i]) + "dB_" + str(audio)
+                            desired_snr_dB = SNR_levels_dB[i]
 
-                        # Save the output with noise to a new file
-                        sf.write(output_audio, noisy_signal, sample_rate)
+                            output_files.append("g" + str(SNR_levels_dB[i]) + "dB_" + str(audio))
 
-                    print("Target Directory: ", target_dir)
-                    print("Reference Directory: ", args.reference_dir)
-                    print("Current Working Directory:", os.getcwd())
+                            noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
 
-                    target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
-                    #print("Target Directory:", target_dir)
-                    avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
+                            # Save the output with noise to a new file
+                            sf.write(output_audio, noisy_signal, sample_rate)
 
-                    print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
+                        target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
+                        avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
 
+                        print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
+                        if avg_pesq < args.pesq_threshold:
+                            print("Average PESQ is below the threshold. Augmenting with modified SNR levels.")
+                            print("SNR Levels:", SNR_levels_dB)
+                            for path in directories_made:
+                                shutil.rmtree(path)
+                        else:
+                            flag_fault = False
+                print("Gaussian Noise added successfully!")
 
             elif augment_data_selected_option_index == 1:
                 print("Adding Ambient Noise")
@@ -245,5 +250,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/reverbEcho/")
     parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/TrialData/OriginalData/")
+    parser.add_argument('-t', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.1)
     args = parser.parse_args()
     main()
