@@ -285,10 +285,10 @@ def main():
                     sr = target_rate
 
                 PESQ = 5.0
-                dB_reduced = 0
+                dB_reduced = 1
 
                 while PESQ > args.pesq_threshold:
-                    db_reduction = -1
+                    db_reduction = -1 * dB_reduced
                     reduction_factor = 10 ** (db_reduction / 20)
 
                     volume_reduced_audio = reference_audio * reduction_factor
