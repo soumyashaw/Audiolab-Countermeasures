@@ -249,8 +249,7 @@ def main():
 
                 print("\033[92mGaussian Noise added successfully!\033[0m")
 
-                # Cleanup
-                print("Directories Made: ", directories_made)
+                # Cleanup: Merge the directories into one
                 current_path = os.getcwd() + "/augmented_data/"
                 make_directory(current_path + "gaussian_noise/")
                 for path in directories_made:
@@ -282,6 +281,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/reverbEcho/")
     parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/TrialData/OriginalData/")
-    parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.1)
+    parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.0)
     args = parser.parse_args()
     main()
