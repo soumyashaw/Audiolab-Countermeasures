@@ -284,6 +284,26 @@ def main():
                     reference_audio = resample(reference_audio, number_of_samples)
                     sr = target_rate
 
+
+
+                db_reduction = -1
+                reduction_factor = 10 ** (db_reduction / 20)
+
+                volume_reduced_audio = reference_audio * reduction_factor
+
+                PESQ = pesq(sr, reference_audio, volume_reduced_audio, 'wb')
+                print("PESQ(-1): ", PESQ)
+
+
+                db_reduction = -10
+                reduction_factor = 10 ** (db_reduction / 20)
+
+                volume_reduced_audio = reference_audio * reduction_factor
+
+                PESQ = pesq(sr, reference_audio, volume_reduced_audio, 'wb')
+                print("PESQ(-10): ", PESQ)
+
+
                 PESQ = 5.0
                 dB_reduced = 1
 
