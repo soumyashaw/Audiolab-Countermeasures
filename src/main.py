@@ -304,8 +304,56 @@ def main():
                     if vol_dB >= args.volume_threshold:
                         dB_reduced += 1
 
-                vol_dBs = [float(i) for i in range(1, dB_reduced + 1)]
-                print("Volume Reduction Levels: ", vol_dBs)
+                vol_dBs = [float(i) for i in range(1, dB_reduced)]
+                
+                directories_made = []
+
+                # List all the audio files in the reference directory (original audio files)
+                reference_files = os.listdir(args.reference_dir)
+
+                # Divide the list of audio files into n partitions (based on the number of SNR levels)
+                audio_files = divide_list_randomly(reference_files, len(vol_dBs))
+
+                # Check the existence of directory to store the augmented data exists
+                for i in range(len(vol_dBs)):
+                    # Change the directory to the reference directory
+                    os.chdir(args.reference_dir)
+
+                    # Create a new directory to store the augmented data
+                    os.chdir("../")
+                    target_dir = os.getcwd() + "/augmented_data/vol_reduction_" + str(vol_dBs[i]) + "dB/"
+                    make_directory(target_dir)
+                    directories_made.append(target_dir)
+
+                    # Add Gaussian Noise to the audio files with given SNR level
+                    for audio in tqdm(audio_files[i], desc="Reducing Volume in Partition " + str(i+1)):
+                        input_audio = args.reference_dir + str(audio)
+                        # Append the identifier string to output audio file
+                        output_audio = target_dir + "vol" + str(vol_dBs[i]) + "dB_" + str(audio)
+
+                        reference_audio, sr = librosa.load(input_audio, sr=None)
+
+                        db_reduction = -1 * vol_dBs[i]
+                        reduction_factor = 10 ** (db_reduction / 20)
+
+                        volume_reduced_audio = reference_audio * reduction_factor
+
+                        sf.write(output_audio, volume_reduced_audio, sr)
+
+                    print()
+
+                    print("\033[92mVolume Reduced successfully!\033[0m")
+
+                    # Cleanup: Merge the directories into one
+                    current_path = os.getcwd() + "/augmented_data/"
+                    make_directory(current_path + "volume_reduced/")
+                    for path in directories_made:
+                        for file in os.listdir(path):
+                            shutil.move(path + file, current_path + "volume_reduced/" + file)
+                        os.rmdir(path)
+
+
+
 
                 
 
