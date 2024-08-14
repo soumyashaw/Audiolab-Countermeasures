@@ -242,7 +242,7 @@ def main():
                 "Add Ambient Noise",
                 "Add Reverberation",
                 "Add Muffling (Volume Reduction)",
-                "Add Codec Losses",
+                "Add Codec Artifacts",
                 "Add Downsampling Effects",
                 "Add Packet Loss Effects",
                 "Go Back"
@@ -373,6 +373,19 @@ def main():
 
                         # Append the output audio file to the list for text file creation
                         output_files.append("reverb_" + str(audio))
+
+                avg_pesq = calculate_avg_pesq(audio_files, os.getcwd() + "/augmented_data/reverberations/", args.reference_dir, prefix = "reverb_")
+
+                # Print the average PESQ for the packet drop rate
+                print(f"Average PESQ for {loss_rate} packet drop rate: {avg_pesq}")
+
+                if avg_pesq < args.pesq_threshold:
+                    print("\033[91mAverage PESQ is below the threshold.\033[0m Deleting augmented data.")
+
+                    # Remove the directory made
+                    shutil.rmtree(target_dir)
+
+                print("\033[92mReverberations added successfully!\033[0m")
 
             elif augment_data_selected_option_index == 3:
                 output_files = []
@@ -508,6 +521,8 @@ def main():
 
                         else:
                             sf.write(output_audio, codec_added_audio, 16000)
+
+                print("\033[92mCodec Artifacts added successfully!\033[0m")
 
                 # Cleanup: Merge the directories into one
                 current_path = os.getcwd() + "/augmented_data/"
@@ -647,11 +662,13 @@ def main():
                     # Remove the directory made
                     shutil.rmtree(target_dir)
 
+                print("\033[92mPacket Loss Effect added successfully!\033[0m")
+
             elif augment_data_selected_option_index == 6:
                 continue
 
         elif selected_option_index == 2:
-            print("Exiting the program. Goodbye!")
+            print("Terminating Execution. Goodbye!")
             break
 
         # Pause to allow the user to read the output
