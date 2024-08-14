@@ -374,9 +374,12 @@ def main():
 
                 audio_files = os.listdir(args.reference_dir)
 
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
                 print(os.getcwd())
 
-                target_dir = os.getcwd() + "/augmented_data/vol_reduction_" + str(int(vol_dBs[i])) + "dB/"
+                target_dir = os.getcwd() + "/augmented_data/packet_loss/"
                 #make_directory(target_dir)
 
             elif augment_data_selected_option_index == 6:
