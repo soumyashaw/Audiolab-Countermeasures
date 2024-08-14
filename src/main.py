@@ -451,7 +451,7 @@ def main():
                         output_files.append(str(codecs[i]) + "_" + str(audio))
 
                         # Call the function to add Codec losses to the audio file
-                        codec_added_audio = add_codec_loss(input_audio, codecs[i])
+                        codec_added_audio = add_codec_loss(input_audio, "wav", codecs[i])
 
                         if codecs[i] == 'opus':
                             codec_added_audio.export(output_audio, format="wav")
