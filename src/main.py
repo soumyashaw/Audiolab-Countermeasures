@@ -374,16 +374,18 @@ def main():
                         # Append the output audio file to the list for text file creation
                         output_files.append("reverb_" + str(audio))
 
-                avg_pesq = calculate_avg_pesq(audio_files, os.getcwd() + "/augmented_data/reverberations/", args.reference_dir, prefix = "reverb_")
+                    avg_pesq = calculate_avg_pesq(audio_files[i], os.getcwd() + "/augmented_data/reverberations/", args.reference_dir, prefix = "reverb_")
 
-                # Print the average PESQ for the packet drop rate
-                print(f"Average PESQ for {loss_rate} packet drop rate: {avg_pesq}")
+                    # Print the average PESQ for the packet drop rate
+                    print(f"Average PESQ for Reverberations Type {i+1}: {avg_pesq}")
 
-                if avg_pesq < args.pesq_threshold:
-                    print("\033[91mAverage PESQ is below the threshold.\033[0m Deleting augmented data.")
+                    if avg_pesq < args.pesq_threshold:
+                        print("\033[91mAverage PESQ is below the threshold.\033[0m Deleting augmented data.")
 
-                    # Remove the directory made
-                    shutil.rmtree(target_dir)
+                        # Remove the directory made
+                        shutil.rmtree(target_dir)
+
+                        break
 
                 print("\033[92mReverberations added successfully!\033[0m")
 
