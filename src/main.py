@@ -172,7 +172,6 @@ def main():
             
 
         elif selected_option_index == 1:
-            output_files = []
 
             augment_data_menu_options = [
                 "Add Gaussian Noise",
@@ -189,6 +188,8 @@ def main():
             augment_data_selected_option_index = augment_data_menu.show()
 
             if augment_data_selected_option_index == 0:
+                output_files = []
+
                 print(" "*50 + "\033[91mAdding Gaussian Noise\033[0m")
                 print()
 
@@ -273,14 +274,20 @@ def main():
                     os.rmdir(path)
 
             elif augment_data_selected_option_index == 1:
+                output_files = []
+
                 print(" "*50 + "\033[91mAdding Ambient Noise\033[0m")
                 print()
 
             elif augment_data_selected_option_index == 2:
+                output_files = []
+
                 print(" "*50 + "\033[91mAdding Reverberation\033[0m")
                 print()
 
             elif augment_data_selected_option_index == 3:
+                output_files = []
+
                 print(" "*50 + "\033[91mAdding Muffling (Volume Reduction)\033[0m")
                 print()
 
@@ -339,6 +346,9 @@ def main():
                         # Append the identifier string to output audio file
                         output_audio = target_dir + "vol" + str(int(vol_dBs[i])) + "dB_" + str(audio)
 
+                        # Append the output audio file to the list for text file creation
+                        output_files.append("vol" + str(int(vol_dBs[i])) + "dB_" + str(audio))
+
                         reference_audio, sr = librosa.load(input_audio, sr=None)
 
                         db_reduction = -1 * vol_dBs[i]
@@ -361,14 +371,61 @@ def main():
                     os.rmdir(path)
 
             elif augment_data_selected_option_index == 4:
+                output_files = []
+
                 print(" "*50 + "\033[91mAdding Codec Losses\033[0m")
                 print()
 
+                codecs = ['mulaw', 'g722', 'alaw', 'opus']
+
+                # Empty list to store the Gaussian Noise directories with particular SNR levels
+                directories_made = []
+                
+                # Change the directory to the reference directory
+                os.chdir(args.reference_dir)
+
+                # List all the audio files in the reference directory (original audio files)
+                reference_files = os.listdir(args.reference_dir)
+
+                # Divide the list of audio files into n partitions (based on the number of SNR levels)
+                audio_files = divide_list_randomly(reference_files, len(codecs))
+
+                # Check the existence of directory to store the augmented data exists
+                for i in range(len(codecs)):
+                    # Change the directory to the reference directory
+                    os.chdir(args.reference_dir)
+
+                    # Create a new directory to store the augmented data
+                    os.chdir("../")
+                    target_dir = os.getcwd() + "/augmented_data/" + str(codecs[i]) + "/"
+                    make_directory(target_dir)
+                    directories_made.append(target_dir)
+
+                    # Add Gaussian Noise to the audio files with given SNR level
+                    """for audio in tqdm(audio_files[i], desc="Adding Gaussian Noise to Partition " + str(i+1)):
+                        input_audio = args.reference_dir + str(audio)
+                        # Append the identifier string to output audio file
+                        output_audio = target_dir + "g" + str(SNR_levels_dB[i]) + "dB_" + str(audio)
+                        desired_snr_dB = SNR_levels_dB[i]
+
+                        # Append the output audio file to the list for text file creation
+                        output_files.append("g" + str(SNR_levels_dB[i]) + "dB_" + str(audio))
+
+                        # Call the function to add white noise to the audio file
+                        noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
+
+                        # Save the output with noise to a new file
+                        sf.write(output_audio, noisy_signal, sample_rate)"""
+
             elif augment_data_selected_option_index == 5:
+                output_files = []
+
                 print(" "*50 + "\033[91mAdding Downsampling Effects\033[0m")
                 print()
 
             elif augment_data_selected_option_index == 6:
+                output_files = []
+
                 print(" "*50 + "\033[91mPacket Loss Effects\033[0m")
                 print()
 
@@ -385,6 +442,9 @@ def main():
                 for audio in tqdm(audio_files, desc="Adding Packet Loss Effects"):
                     input_audio = args.reference_dir + str(audio)
                     output_audio = target_dir + "pl_" + str(audio)
+
+                    # Append the output audio file to the list for text file creation
+                    output_files.append("pl_" + str(audio))
 
                     reference_audio, sr = librosa.load(input_audio, sr=None)
 
