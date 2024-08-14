@@ -145,7 +145,10 @@ def add_codec_loss(audioPath, format, codec: str):
         # Load the encoded audio file
         audio = AudioSegment.from_file('encoded.opus')
 
-        shutil.rmtree('encoded.opus')
+        try:
+            os.remove('encoded.opus')
+        except:
+            pass
 
         return audio
 
