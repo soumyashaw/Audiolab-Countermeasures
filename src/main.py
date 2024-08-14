@@ -166,11 +166,11 @@ def downsample_audio(audioPath, sampling_freq, original_sampling_freq = 44100):
 
     # Downsample the audio file
     number_of_samples = round(len(audio) * float(sampling_freq) / original_sampling_freq)
-    downsampled_audio = librosa.resample(audio, number_of_samples)
+    downsampled_audio = resample(audio, number_of_samples)
 
     # Upsample the audio file to the original sampling frequency
     number_of_samples = round(len(downsampled_audio) * float(original_sampling_freq) / sampling_freq)
-    audio = librosa.resample(downsampled_audio, number_of_samples)
+    audio = resample(downsampled_audio, number_of_samples)
 
     return audio, original_sampling_freq
 
