@@ -6,11 +6,13 @@ import shutil
 import random
 import librosa
 import argparse
+import torchaudio
 import numpy as np
 from pesq import pesq
 from tqdm import tqdm
 import soundfile as sf
 from scipy.io import wavfile
+from pydub import AudioSegment
 from scipy.signal import resample
 from simple_term_menu import TerminalMenu
 
@@ -113,6 +115,43 @@ def simulate_packet_loss(audio_data, loss_rate):
 
     simulated_data = np.delete(audio_data, indices_to_drop)
     return simulated_data
+
+def add_codec_loss(audioPath, format, codec: str):
+    if codec == 'mulaw' or codec == 'alaw' or codec == 'g722':
+        # Load the audio file
+        waveform, sr = torchaudio.load(audioPath, channels_first=False)
+
+        # Assign Encoder based on the codec
+        if codec == 'mulaw':
+            encoder = "pcm_mulaw"
+        elif codec == 'alaw':
+            encoder = "pcm_alaw"
+        elif codec == 'g722':
+            encoder = "g722"
+
+        # Apply the codec to the audio file
+        encoder = torchaudio.io.AudioEffector(format=format, encoder=encoder)
+
+        # Return the audio file with the codec applied
+        return encoder.apply(waveform, sr)
+    
+    elif codec == 'opus':
+        # Load the audio file
+        audio = AudioSegment.from_file(audioPath)
+
+        # Export as Opus format
+        audio.export('encoded.opus', format="opus")
+
+        # Load the encoded audio file
+        audio = AudioSegment.from_file('encoded.opus')
+
+        shutil.rmtree('encoded.opus')
+
+        return audio
+
+
+
+
 
 def main():
     # Define the menu options
@@ -402,20 +441,27 @@ def main():
                     directories_made.append(target_dir)
 
                     # Add Gaussian Noise to the audio files with given SNR level
-                    """for audio in tqdm(audio_files[i], desc="Adding Gaussian Noise to Partition " + str(i+1)):
+                    for audio in tqdm(audio_files[i], desc="Adding Codec Losses to Partition " + str(i+1)):
                         input_audio = args.reference_dir + str(audio)
+
                         # Append the identifier string to output audio file
-                        output_audio = target_dir + "g" + str(SNR_levels_dB[i]) + "dB_" + str(audio)
-                        desired_snr_dB = SNR_levels_dB[i]
+                        output_audio = target_dir + str(codecs[i]) + "_" + str(audio)
 
                         # Append the output audio file to the list for text file creation
-                        output_files.append("g" + str(SNR_levels_dB[i]) + "dB_" + str(audio))
+                        output_files.append(str(codecs[i]) + "_" + str(audio))
 
-                        # Call the function to add white noise to the audio file
-                        noisy_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
+                        # Call the function to add Codec losses to the audio file
+                        codec_added_audio = add_codec_loss(input_audio, codecs[i])
+
+                        if codecs[i] == 'opus':
+                            codec_added_audio.export(output_audio, format="wav")
+
+                        else:
+                            sf.write(output_audio, codec_added_audio, 16000)
 
                         # Save the output with noise to a new file
-                        sf.write(output_audio, noisy_signal, sample_rate)"""
+                        sf.write(output_audio, noisy_signal, sample_rate)
+
 
             elif augment_data_selected_option_index == 5:
                 output_files = []
