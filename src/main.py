@@ -406,10 +406,10 @@ def main():
 
                 # Cleanup: Merge the directories into one
                 current_path = os.getcwd() + "/augmented_data/"
-                make_directory(current_path + "volume_reduced/")
+                make_directory(current_path + "volume_reduction/")
                 for path in directories_made:
                     for file in os.listdir(path):
-                        shutil.move(path + file, current_path + "volume_reduced/" + file)
+                        shutil.move(path + file, current_path + "volume_reduction/" + file)
                     os.rmdir(path)
 
             elif augment_data_selected_option_index == 4:
@@ -461,6 +461,14 @@ def main():
 
                         else:
                             sf.write(output_audio, codec_added_audio, 16000)
+
+                # Cleanup: Merge the directories into one
+                current_path = os.getcwd() + "/augmented_data/"
+                make_directory(current_path + "codec_losses/")
+                for path in directories_made:
+                    for file in os.listdir(path):
+                        shutil.move(path + file, current_path + "codec_losses/" + file)
+                    os.rmdir(path)
 
 
             elif augment_data_selected_option_index == 5:
