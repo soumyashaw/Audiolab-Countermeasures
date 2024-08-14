@@ -576,7 +576,7 @@ def main():
                         avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "ds_" + str(int(sampling_freqs[i])) + "_")
 
                         # Print the average PESQ for the SNR level
-                        print("Average PESQ for Sampling Frequency ", sampling_freqs[i], " Hz: ", avg_pesq)
+                        print(f"Average PESQ for Sampling Frequency {sampling_freqs[i]} Hz: {avg_pesq}")
 
                         # Check if the average PESQ is below the threshold
                         if avg_pesq < args.pesq_threshold:
@@ -635,6 +635,17 @@ def main():
                     packet_loss_audio = simulate_packet_loss(reference_audio, loss_rate)
 
                     sf.write(output_audio, packet_loss_audio, sr)
+
+                avg_pesq = calculate_avg_pesq(audio_files, target_dir, args.reference_dir, prefix = "pl_")
+
+                # Print the average PESQ for the packet drop rate
+                print(f"Average PESQ for {loss_rate} packet drop rate: {avg_pesq}")
+
+                if avg_pesq < args.pesq_threshold:
+                    print("\033[91mAverage PESQ is below the threshold.\033[0m Deleting augmented data.")
+
+                    # Remove the directory made
+                    shutil.rmtree(target_dir)
 
             elif augment_data_selected_option_index == 6:
                 continue
