@@ -576,12 +576,12 @@ def main():
                         avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "ds_" + str(int(sampling_freqs[i])) + "_")
 
                         # Print the average PESQ for the SNR level
-                        print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
+                        print("Average PESQ for Sampling Frequency ", sampling_freqs[i], " Hz: ", avg_pesq)
 
                         # Check if the average PESQ is below the threshold
                         if avg_pesq < args.pesq_threshold:
                             # Remove the SNR level from the list
-                            print("\033[91mAverage PESQ is below the threshold.\033[0m Augmenting with modified SNR levels.")
+                            print("\033[91mAverage PESQ is below the threshold.\033[0m Augmenting with modified Downsampling levels.")
                             SNR_levels_dB.pop()
 
                             # Remove the directories made
