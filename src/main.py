@@ -336,6 +336,17 @@ def main():
 
                 audio_files = os.listdir(args.reference_dir)
 
+                audio_files = divide_list_randomly(audio_files, 2)
+
+                os.chdir(args.reference_dir)
+
+                os.chdir("../")
+
+                make_directory(os.getcwd() + "/augmented_data/reverberations/")
+
+                for i in range(len(audio_files)):
+                    print("Segement: ", i)
+
                 print(os.getcwd())
 
             elif augment_data_selected_option_index == 3:
