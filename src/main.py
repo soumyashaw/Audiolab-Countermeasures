@@ -106,6 +106,14 @@ def find_volume(audio):
     # Convert the RMS value to decibels (dB)
     return 20 * np.log10(rms)
 
+def simulate_packet_loss(audio_data, loss_rate):
+    num_samples = len(audio_data)
+    lost_samples = int(loss_rate * num_samples)
+    indices_to_drop = np.random.choice(num_samples, lost_samples, replace=False)
+
+    simulated_data = np.delete(audio_data, indices_to_drop)
+    return simulated_data
+
 def main():
     # Define the menu options
     menu_options = [
@@ -299,13 +307,11 @@ def main():
                     volume_reduced_audio = reference_audio * reduction_factor
 
                     vol_dB = find_volume(volume_reduced_audio)
-                    print("vol_dB", vol_dB)
 
                     if vol_dB >= args.volume_threshold:
                         dB_reduced += 1
 
                 vol_dBs = [float(i) for i in range(1, dB_reduced)]
-                print("vol_dBs", vol_dBs)
                 
                 directories_made = []
 
@@ -314,7 +320,6 @@ def main():
 
                 # Divide the list of audio files into n partitions (based on the number of SNR levels)
                 audio_files = divide_list_randomly(reference_files, len(vol_dBs))
-                print("audio_files", len(audio_files), audio_files)
 
                 # Check the existence of directory to store the augmented data exists
                 for i in range(len(vol_dBs)):
@@ -361,6 +366,17 @@ def main():
             elif augment_data_selected_option_index == 5:
                 print(" "*50 + "\033[91mAdding Downsampling Effects\033[0m")
                 print()
+
+            elif augment_data_selected_option_index == 6:
+                print(" "*50 + "\033[91mPacket Loss Effects\033[0m")
+                print()
+
+                audio_files = os.listdir(args.reference_dir)
+
+                print(os.getcwd())
+
+                target_dir = os.getcwd() + "/augmented_data/vol_reduction_" + str(int(vol_dBs[i])) + "dB/"
+                #make_directory(target_dir)
 
             elif augment_data_selected_option_index == 6:
                 continue
