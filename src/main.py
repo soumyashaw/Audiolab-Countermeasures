@@ -181,6 +181,7 @@ def main():
                 "Add Muffling (Volume Reduction)",
                 "Add Codec Losses",
                 "Add Downsampling Effects",
+                "Add Packet Loss Effects",
                 "Go Back"
             ]
 
