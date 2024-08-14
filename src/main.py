@@ -257,12 +257,12 @@ def main():
                 print(" "*50 + "\033[91mAdding Gaussian Noise\033[0m")
                 print()
 
-                flag_fault = True
+                flag_fault_0 = True
                 SNR_levels_dB = [5, 10, 15, 20]
                 SNR_levels_dB.sort(reverse=True)
 
                 # Continue to augment the data until the PESQ threshold is met
-                while flag_fault:
+                while flag_fault_0:
                     # Empty list to store the Gaussian Noise directories with particular SNR levels
                     directories_made = []
                     
@@ -320,10 +320,10 @@ def main():
                                 shutil.rmtree(path)
 
                             # Set the flag to True to continue augmenting the data
-                            flag_fault = True
+                            flag_fault_0 = True
                         else:
                             # Set the flag to False to stop augmenting the data
-                            flag_fault = False
+                            flag_fault_0 = False
 
                         print()
 
@@ -524,43 +524,76 @@ def main():
                 print(" "*50 + "\033[91mAdding Downsampling Effects\033[0m")
                 print()
 
+                flag_fault_5 = True
+
                 # Target sampling frequencies for the downsampling effect
                 sampling_freqs = list(np.arange(args.lower_sampling_rate, args.current_sampling_rate, 5000))
+
+                # Sort the sampling frequencies in descending order
+                sampling_freqs.sort(reverse=True)
+
+                # Continue to augment the data until the PESQ threshold is met
+                while flag_fault_5:
                 
-                # Empty list to store the Downsampled directories with particular sampling frequencies
-                directories_made = []
+                    # Empty list to store the Downsampled directories with particular sampling frequencies
+                    directories_made = []
 
-                # List all the audio files in the reference directory (original audio files)
-                reference_files = os.listdir(args.reference_dir)
-
-                # Divide the list of audio files into n partitions (based on the number of SNR levels)
-                audio_files = divide_list_randomly(reference_files, len(sampling_freqs))
-
-                # Check the existence of directory to store the augmented data exists
-                for i in range(len(sampling_freqs)):
                     # Change the directory to the reference directory
                     os.chdir(args.reference_dir)
 
-                    # Create a new directory to store the augmented data
-                    os.chdir("../")
-                    target_dir = os.getcwd() + "/augmented_data/downsampling_" + str(int(sampling_freqs[i])) + "/"
-                    make_directory(target_dir)
-                    directories_made.append(target_dir)
+                    # List all the audio files in the reference directory (original audio files)
+                    reference_files = os.listdir(args.reference_dir)
 
-                    # Reduce the volume of the audio files with given dB levels
-                    for audio in tqdm(audio_files[i], desc="Downsampling audio in Partition " + str(i+1)):
-                        input_audio = args.reference_dir + str(audio)
-                        # Append the identifier string to output audio file
-                        output_audio = target_dir + "ds_" + str(int(sampling_freqs[i])) + "_" + str(audio)
+                    # Divide the list of audio files into n partitions (based on the number of SNR levels)
+                    audio_files = divide_list_randomly(reference_files, len(sampling_freqs))
 
-                        # Append the output audio file to the list for text file creation
-                        output_files.append("ds_" + str(int(sampling_freqs[i])) + "_" + str(audio))
+                    # Check the existence of directory to store the augmented data exists
+                    for i in range(len(sampling_freqs)):
+                        # Change the directory to the reference directory
+                        os.chdir(args.reference_dir)
 
-                        downsampled_audio, sr = downsample_audio(input_audio, sampling_freqs[i], args.current_sampling_rate)
+                        # Create a new directory to store the augmented data
+                        os.chdir("../")
+                        target_dir = os.getcwd() + "/augmented_data/downsampling_" + str(int(sampling_freqs[i])) + "/"
+                        make_directory(target_dir)
+                        directories_made.append(target_dir)
 
-                        sf.write(output_audio, downsampled_audio, sr)
+                        # Reduce the volume of the audio files with given dB levels
+                        for audio in tqdm(audio_files[i], desc="Downsampling audio in Partition " + str(i+1)):
+                            input_audio = args.reference_dir + str(audio)
+                            # Append the identifier string to output audio file
+                            output_audio = target_dir + "ds_" + str(int(sampling_freqs[i])) + "_" + str(audio)
 
-                    print()
+                            # Append the output audio file to the list for text file creation
+                            output_files.append("ds_" + str(int(sampling_freqs[i])) + "_" + str(audio))
+
+                            downsampled_audio, sr = downsample_audio(input_audio, sampling_freqs[i], args.current_sampling_rate)
+
+                            sf.write(output_audio, downsampled_audio, sr)
+
+                        # Calculate the average PESQ for the augmented data
+                        target_dir = os.getcwd() + "/augmented_data/downsampling_" + str(int(sampling_freqs[i])) + "/"
+                        avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "ds_" + str(int(sampling_freqs[i])) + "_")
+
+                        # Print the average PESQ for the SNR level
+                        print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
+
+                        # Check if the average PESQ is below the threshold
+                        if avg_pesq < args.pesq_threshold:
+                            # Remove the SNR level from the list
+                            print("\033[91mAverage PESQ is below the threshold.\033[0m Augmenting with modified SNR levels.")
+                            SNR_levels_dB.pop()
+
+                            # Remove the directories made
+                            for path in directories_made:
+                                shutil.rmtree(path)
+
+                            # Set the flag to True to continue augmenting the data
+                            flag_fault_5 = True
+                        else:
+                            # Set the flag to False to stop augmenting the data
+                            flag_fault_5 = False
+                        print()
 
                 print("\033[92mDownsampling successfully!\033[0m")
 
