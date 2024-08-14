@@ -329,6 +329,14 @@ def main():
 
                 print("\033[92mGaussian Noise added successfully!\033[0m")
 
+                # Create a text file to store the output audio files
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
+                with open('augmented_data/gaussian_noise.txt', 'w') as file:
+                    for item in output_files:
+                        file.write(f"{item}\n")
+
                 # Cleanup: Merge the directories into one
                 current_path = os.getcwd() + "/augmented_data/"
                 make_directory(current_path + "gaussian_noise/")
@@ -388,6 +396,14 @@ def main():
                         break
 
                 print("\033[92mReverberations added successfully!\033[0m")
+
+                # Create a text file to store the output audio files
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
+                with open('augmented_data/reverberations.txt', 'w') as file:
+                    for item in output_files:
+                        file.write(f"{item}\n")
 
             elif augment_data_selected_option_index == 3:
                 output_files = []
@@ -466,6 +482,14 @@ def main():
 
                 print("\033[92mVolume Reduced successfully!\033[0m")
 
+                # Create a text file to store the output audio files
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
+                with open('augmented_data/volume_reduction.txt', 'w') as file:
+                    for item in output_files:
+                        file.write(f"{item}\n")
+
                 # Cleanup: Merge the directories into one
                 current_path = os.getcwd() + "/augmented_data/"
                 make_directory(current_path + "volume_reduction/")
@@ -524,7 +548,16 @@ def main():
                         else:
                             sf.write(output_audio, codec_added_audio, 16000)
 
+                print()
                 print("\033[92mCodec Artifacts added successfully!\033[0m")
+
+                # Create a text file to store the output audio files
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
+                with open('augmented_data/codec_losses.txt', 'w') as file:
+                    for item in output_files:
+                        file.write(f"{item}\n")
 
                 # Cleanup: Merge the directories into one
                 current_path = os.getcwd() + "/augmented_data/"
@@ -612,7 +645,15 @@ def main():
                             flag_fault_5 = False
                         print()
 
-                print("\033[92mDownsampling successfully!\033[0m")
+                print("\033[92mDownsampled the audios successfully!\033[0m")
+
+                # Create a text file to store the output audio files
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
+                with open('augmented_data/downsampling.txt', 'w') as file:
+                    for item in output_files:
+                        file.write(f"{item}\n")
 
                 # Cleanup: Merge the directories into one
                 current_path = os.getcwd() + "/augmented_data/"
@@ -664,7 +705,16 @@ def main():
                     # Remove the directory made
                     shutil.rmtree(target_dir)
 
+                print()
                 print("\033[92mPacket Loss Effect added successfully!\033[0m")
+
+                # Create a text file to store the output audio files
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
+                with open('augmented_data/packet_loss.txt', 'w') as file:
+                    for item in output_files:
+                        file.write(f"{item}\n")
 
             elif augment_data_selected_option_index == 6:
                 continue
