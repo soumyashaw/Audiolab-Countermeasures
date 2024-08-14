@@ -380,7 +380,18 @@ def main():
                 print(os.getcwd())
 
                 target_dir = os.getcwd() + "/augmented_data/packet_loss/"
-                #make_directory(target_dir)
+                make_directory(target_dir)
+
+                for audio in tqdm(audio_files, desc="Adding Packet Loss Effects"):
+                    input_audio = args.reference_dir + str(audio)
+                    output_audio = target_dir + "pl_" + str(audio)
+
+                    reference_audio, sr = librosa.load(input_audio, sr=None)
+
+                    loss_rate = args.packet_loss_rate
+                    packet_loss_audio = simulate_packet_loss(reference_audio, loss_rate)
+
+                    sf.write(output_audio, packet_loss_audio, sr)
 
             elif augment_data_selected_option_index == 6:
                 continue
@@ -398,5 +409,6 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/TrialData/OriginalData/")
     parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.0)
     parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-34)
+    parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
     args = parser.parse_args()
     main()
