@@ -459,9 +459,6 @@ def main():
                         else:
                             sf.write(output_audio, codec_added_audio, 16000)
 
-                        # Save the output with noise to a new file
-                        sf.write(output_audio, noisy_signal, sample_rate)
-
 
             elif augment_data_selected_option_index == 5:
                 output_files = []
