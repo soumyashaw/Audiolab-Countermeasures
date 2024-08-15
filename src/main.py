@@ -398,6 +398,16 @@ def main():
                 # List all the audio files in the reference directory (original audio files)
                 audio_files = os.listdir(args.reference_dir)
 
+                # Change the directory to the reference directory
+                os.chdir(args.reference_dir)
+
+                os.chdir("../")
+
+                # Make a directory to store the augmented data
+                make_directory(os.getcwd() + "/augmented_data/ambient_noise/")
+
+                target_dir = os.getcwd() + "/augmented_data/ambient_noise/"
+
                 for audio in tqdm(audio_files, desc="Adding Ambient Noise to Audios"):
                     # Randomly choose the ambient noise file
                     noise = random.choice(noise_files)
