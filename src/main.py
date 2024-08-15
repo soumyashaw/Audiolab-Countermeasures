@@ -225,8 +225,6 @@ def add_ambient_noise(audioPath, noisePath, snr_dB):
         # Calculate the PESQ of the noisy signal
         PESQ = pesq(temp_sr, temp_signal, temp_noisy_signal, 'wb')
 
-        print("PESQ: ", PESQ)
-
         if PESQ > args.pesq_threshold:
             flag_fault = False
         else:
