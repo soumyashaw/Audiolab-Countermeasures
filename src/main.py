@@ -351,6 +351,8 @@ def main():
                 print(" "*50 + "\033[91mAdding Ambient Noise\033[0m")
                 print()
 
+                noise_files = os.listdir(args.ambient_noise_dir)
+
             elif augment_data_selected_option_index == 2:
                 output_files = []
 
@@ -395,6 +397,7 @@ def main():
 
                         break
 
+                print()
                 print("\033[92mReverberations added successfully!\033[0m")
 
                 # Create a text file to store the output audio files
@@ -735,5 +738,6 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
     parser.add_argument('-s', '--lower_sampling_rate', type=int, help="Lower bound sampling rate to be applied to the audios", default=3400)
     parser.add_argument('-e', '--current_sampling_rate', type=int, help="Current sampling rate of the audio files", default=44100)
+    parser.add_argument('-n', '--ambient_noise_dir', type=int, help="path to the ambient noise files to be used", default="")
     args = parser.parse_args()
     main()
