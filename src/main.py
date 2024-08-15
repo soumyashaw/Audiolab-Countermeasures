@@ -200,15 +200,30 @@ def add_ambient_noise(audioPath, noisePath, snr_dB):
     # Calculate the power of the noise signal
     noise_power = np.sum(noise_signal ** 2) / len(noise_signal)
 
-    # Calculate the desired noise power based on the desired SNR
-    snr_linear = 10 ** (snr_dB / 10.0)
-    desired_noise_power = signal_power / snr_linear
+    flag_fault = True
 
-    # Scale the noise signal to achieve the desired noise power
-    scaled_noise = noise_signal * np.sqrt(desired_noise_power / noise_power)
+    while flag_fault:
 
-    # Add the noise to the signal
-    noisy_signal = signal + scaled_noise
+        # Calculate the desired noise power based on the desired SNR
+        snr_linear = 10 ** (snr_dB / 10.0)
+        desired_noise_power = signal_power / snr_linear
+
+        # Scale the noise signal to achieve the desired noise power
+        scaled_noise = noise_signal * np.sqrt(desired_noise_power / noise_power)
+
+        # Add the noise to the signal
+        noisy_signal = signal + scaled_noise
+
+        # Calculate the PESQ of the noisy signal
+        PESQ = pesq(sr, signal, noisy_signal, 'wb')
+
+        print("PESQ: ", PESQ)
+
+        if PESQ > args.pesq_threshold:
+            flag_fault = False
+        else:
+            snr_dB += 5
+            flag_fault = True
 
     return noisy_signal, sr
 
@@ -431,6 +446,7 @@ def main():
                     # Save the output with noise to a new file
                     sf.write(output_audio, noisy_signal, sample_rate)
 
+                print()
                 print("\033[92mAmbient Noise added successfully!\033[0m")
 
                 # Create a text file to store the output audio files
