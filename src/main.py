@@ -352,6 +352,7 @@ def main():
                 print()
 
                 noise_files = os.listdir(args.ambient_noise_dir)
+                print(noise_files)
 
             elif augment_data_selected_option_index == 2:
                 output_files = []
