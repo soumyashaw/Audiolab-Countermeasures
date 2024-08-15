@@ -738,6 +738,6 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
     parser.add_argument('-s', '--lower_sampling_rate', type=int, help="Lower bound sampling rate to be applied to the audios", default=3400)
     parser.add_argument('-e', '--current_sampling_rate', type=int, help="Current sampling rate of the audio files", default=44100)
-    parser.add_argument('-n', '--ambient_noise_dir', type=int, help="path to the ambient noise files to be used", default="")
+    parser.add_argument('-n', '--ambient_noise_dir', type=int, help="path to the ambient noise files to be used", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/")
     args = parser.parse_args()
     main()
