@@ -15,7 +15,7 @@ from scipy.io import wavfile
 from pydub import AudioSegment
 from scipy.signal import resample
 from simple_term_menu import TerminalMenu
-from torchmetrics.audio import PerceptualEvaluationSpeechQuality
+#from torchmetrics.audio import PerceptualEvaluationSpeechQuality
 
 def add_white_noise(audioPath, snr_dB):
     # Load the audio file
@@ -75,10 +75,10 @@ def make_directory(directory):
 def calculate_avg_pesq(target_audio_list, target_dir, reference_dir, prefix = ""):
 
     pesq_total = 0.0
-    pesq_total2 = 0.0
+    #pesq_total2 = 0.0
 
     # Test
-    wb_pesq = PerceptualEvaluationSpeechQuality(16000, 'wb')
+    #wb_pesq = PerceptualEvaluationSpeechQuality(16000, 'wb')
 
     for audio in tqdm(target_audio_list, desc="Calculating Average PESQ"):
         degrRate, target_Audio = wavfile.read(target_dir + prefix + str(audio))
@@ -101,16 +101,16 @@ def calculate_avg_pesq(target_audio_list, target_dir, reference_dir, prefix = ""
             pesq_total += PESQ
 
             # Test
-            PESQ2 = wb_pesq(reference_audio, target_Audio)
-            pesq_total2 += PESQ2
+            #PESQ2 = wb_pesq(reference_audio, target_Audio)
+            #pesq_total2 += PESQ2
 
         except Exception as e:
             print("Error in PESQ calculation:", e)
             pesq_total += 0.0
-            pesq_total2 += 0.0
+            #pesq_total2 += 0.0
             continue
         
-    print("PESQ2: ", pesq_total2/len(target_audio_list))
+    #print("PESQ2: ", pesq_total2/len(target_audio_list))
     return pesq_total/len(target_audio_list)
 
 def find_volume(audio):
@@ -853,12 +853,12 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/reverbEcho/")
-    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/TrialData/OriginalData/")
+    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/ASVspoof2019/LA/ASVspoof2019_LA_train/wav/")
     parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.0)
-    parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-34)
+    parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-35)
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
     parser.add_argument('-s', '--lower_sampling_rate', type=int, help="Lower bound sampling rate to be applied to the audios", default=3400)
-    parser.add_argument('-e', '--current_sampling_rate', type=int, help="Current sampling rate of the audio files", default=44100)
+    parser.add_argument('-e', '--current_sampling_rate', type=int, help="Current sampling rate of the audio files", default=16000)
     parser.add_argument('-n', '--ambient_noise_dir', type=str, help="path to the ambient noise files to be used", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/ambient_noise/")
     args = parser.parse_args()
     main()
