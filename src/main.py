@@ -174,6 +174,44 @@ def downsample_audio(audioPath, sampling_freq, original_sampling_freq = 44100):
 
     return audio, original_sampling_freq
 
+def add_ambient_noise(audioPath, noisePath, snr_dB):
+    # Load the original audio file
+    signal, sr = librosa.load(audioPath, sr=None)
+
+    # Load the noise file
+    noise_signal, noise_sr = librosa.load(noisePath, sr=None)
+
+    # Resample the noise signal to match the sampling rate of the original signal
+    noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
+
+    # Ensure the noise signal is at least as long as the original signal
+    if len(noise_signal) < len(signal):
+        # Repeat the noise signal to match the length of the original signal
+        repetitions = int(np.ceil(len(signal) / len(noise_signal)))
+        noise_signal = np.tile(noise_signal, repetitions)[:len(signal)]
+
+    else:
+        # Trim the noise signal to match the length of the original signal
+        noise_signal = noise_signal[:len(signal)]
+
+    # Calculate the power of the signal
+    signal_power = np.sum(signal ** 2) / len(signal)
+
+    # Calculate the power of the noise signal
+    noise_power = np.sum(noise_signal ** 2) / len(noise_signal)
+
+    # Calculate the desired noise power based on the desired SNR
+    snr_linear = 10 ** (snr_dB / 10.0)
+    desired_noise_power = signal_power / snr_linear
+
+    # Scale the noise signal to achieve the desired noise power
+    scaled_noise = noise_signal * np.sqrt(desired_noise_power / noise_power)
+
+    # Add the noise to the signal
+    noisy_signal = signal + scaled_noise
+
+    return noisy_signal, sr
+
 
 
 
@@ -258,7 +296,7 @@ def main():
                 print()
 
                 flag_fault_0 = True
-                SNR_levels_dB = [5, 10, 15, 20]
+                SNR_levels_dB = [5, 10, 15, 20, 25, 30]
                 SNR_levels_dB.sort(reverse=True)
 
                 # Continue to augment the data until the PESQ threshold is met
@@ -351,8 +389,47 @@ def main():
                 print(" "*50 + "\033[91mAdding Ambient Noise\033[0m")
                 print()
 
+                # Enumerate the ambient noise files in the directory
                 noise_files = os.listdir(args.ambient_noise_dir)
-                print(noise_files)
+
+                # Declare the SNR levels for the ambient noise
+                SNR_levels_dB = [5, 10, 15, 20, 25, 30]
+
+                # List all the audio files in the reference directory (original audio files)
+                audio_files = os.listdir(args.reference_dir)
+
+                for audio in tqdm(audio_files, desc="Adding Ambient Noise to Audios"):
+                    # Randomly choose the ambient noise file
+                    noise = random.choice(noise_files)
+
+                    # Randomly choose the SNR level
+                    SNR = random.choice(SNR_levels_dB)
+
+                    input_audio = args.reference_dir + str(audio)
+
+                    noise_audio = args.ambient_noise_dir + str(noise)
+
+                    # Append the identifier string to output audio file
+                    output_audio = f"{target_dir}amb{str(SNR)}dB_{str(audio)}"
+
+                    # Append the output audio file to the list for text file creation
+                    output_files.append("amb" + str(SNR) + "dB_" + str(audio))
+
+                    # Call the function to add white noise to the audio file
+                    noisy_signal, sample_rate = add_ambient_noise(input_audio, noise_audio, SNR)
+
+                    # Save the output with noise to a new file
+                    sf.write(output_audio, noisy_signal, sample_rate)
+
+                print("\033[92mAmbient Noise added successfully!\033[0m")
+
+                # Create a text file to store the output audio files
+                os.chdir(args.reference_dir)
+                os.chdir("../")
+
+                with open('augmented_data/ambient_noise.txt', 'w') as file:
+                    for item in output_files:
+                        file.write(f"{item}\n")
 
             elif augment_data_selected_option_index == 2:
                 output_files = []
@@ -739,6 +816,6 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
     parser.add_argument('-s', '--lower_sampling_rate', type=int, help="Lower bound sampling rate to be applied to the audios", default=3400)
     parser.add_argument('-e', '--current_sampling_rate', type=int, help="Current sampling rate of the audio files", default=44100)
-    parser.add_argument('-n', '--ambient_noise_dir', type=str, help="path to the ambient noise files to be used", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/")
+    parser.add_argument('-n', '--ambient_noise_dir', type=str, help="path to the ambient noise files to be used", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/ambient_noise/")
     args = parser.parse_args()
     main()
