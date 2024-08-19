@@ -232,7 +232,6 @@ def add_ambient_noise(audioPath, noisePath, snr_dB):
             temp_signal = resample(signal, number_of_samples)
             temp_noisy_signal = resample(noisy_signal, number_of_samples)
             temp_sr = target_rate
-            print("temp_sr", temp_sr)
 
             # Calculate the PESQ of the noisy signal
             PESQ = pesq(temp_sr, temp_signal, temp_noisy_signal, 'wb')
