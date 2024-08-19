@@ -256,7 +256,7 @@ def add_ambient_noise(audioPath, noisePath, snr_dB):
 def main():
     # Define the menu options
     menu_options = [
-        "Calculate Average PESQ",
+        "Calculate Average STI",
         "Augment Data for Training",
         "Exit",
     ]
