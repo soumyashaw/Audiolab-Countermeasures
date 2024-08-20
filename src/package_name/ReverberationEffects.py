@@ -3,7 +3,7 @@
 import os
 import shutil
 from tqdm import tqdm
-from utils import divide_list_randomly, make_directory, calculate_avg_sti
+from package_name.utils import divide_list_randomly, make_directory, calculate_avg_sti
 
 def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_path: str = "/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/iir.wav"):
     if selectable == 0:
