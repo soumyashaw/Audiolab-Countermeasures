@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 import soundfile as sf
 from scipy.signal import resample
-from utils import divide_list_randomly, make_directory
+from package_name.utils import divide_list_randomly, make_directory
 
 
 def find_volume(audio):
