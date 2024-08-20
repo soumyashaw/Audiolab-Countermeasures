@@ -6,7 +6,7 @@ import librosa
 import numpy as np
 from tqdm import tqdm
 import soundfile as sf
-from utils import make_directory, calculate_avg_sti
+from package_name.utils import make_directory, calculate_avg_sti
 
 def simulate_packet_loss(audio_data, loss_rate):
     num_samples = len(audio_data)

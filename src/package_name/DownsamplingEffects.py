@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 import soundfile as sf
 from scipy.signal import resample
-from utils import divide_list_randomly, make_directory, calculate_avg_sti
+from package_name.utils import divide_list_randomly, make_directory, calculate_avg_sti
 
 def downsample_audio(audioPath, sampling_freq, original_sampling_freq = 44100):
     # Load the audio file

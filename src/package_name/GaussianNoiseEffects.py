@@ -6,7 +6,7 @@ import librosa
 import numpy as np
 from tqdm import tqdm
 import soundfile as sf
-from utils import divide_list_randomly, make_directory, calculate_avg_sti
+from package_name.utils import divide_list_randomly, make_directory, calculate_avg_sti
 
 def add_white_noise(audioPath: str, snr_dB):
     # Load the audio file
