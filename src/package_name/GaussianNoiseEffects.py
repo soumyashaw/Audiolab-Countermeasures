@@ -52,6 +52,9 @@ def add_gaussian_noise_effects(SNR_levels_dB: list, reference_dir: str, sti_thre
 
         # Check the existence of directory to store the augmented data exists
         for i in range(len(SNR_levels_dB)):
+            # Set the flag to True initially
+            flag_fault_0 = True
+
             # Change the directory to the reference directory
             os.chdir(reference_dir)
 
