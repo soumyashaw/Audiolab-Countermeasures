@@ -2,17 +2,8 @@
 
 # Imports
 import os
-import shutil
-import random
-import librosa
 import argparse
-import torchaudio
-import numpy as np
 from tqdm import tqdm
-import soundfile as sf
-from scipy.io import wavfile
-from pydub import AudioSegment
-from scipy.signal import resample
 from package_name.sti import stiFromAudio, readwav
 from simple_term_menu import TerminalMenu
 
@@ -101,7 +92,6 @@ def main():
                 
             elif augment_data_selected_option_index == 4:
                 add_codec_artifacts(args.reference_dir)
-
 
             elif augment_data_selected_option_index == 5:
                 add_downsampling_effects(args.reference_dir, args.lower_sampling_rate, args.current_sampling_rate, args.sti_threshold)
