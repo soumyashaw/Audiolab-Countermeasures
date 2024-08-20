@@ -98,6 +98,7 @@ def add_gaussian_noise_effects(SNR_levels_dB: list, reference_dir: str, sti_thre
 
                 # Set the flag to True to continue augmenting the data
                 flag_fault_0 = True
+                break
             else:
                 # Set the flag to False to stop augmenting the data
                 flag_fault_0 = False
