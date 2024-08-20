@@ -16,11 +16,13 @@ from scipy.signal import resample
 from package_name.sti import stiFromAudio, readwav
 from simple_term_menu import TerminalMenu
 
-from package_name.GaussianNoiseEffects import add_gaussian_noise_effects
+from package_name.CodecEffects import add_codec_artifacts
+from package_name.PacketLossEffects import add_packet_loss_effects
+from package_name.DownsamplingEffects import add_downsampling_effects
 from package_name.AmbientNoiseEffects import add_ambient_noise_effects
 from package_name.ReverberationEffects import add_reverberation_effects
+from package_name.GaussianNoiseEffects import add_gaussian_noise_effects
 from package_name.AmplitudeReductionEffects import add_amplitude_reduction_effects
-from package_name.CodecEffects import add_codec_artifacts
 
 def main():
     # Define the menu options
@@ -102,152 +104,10 @@ def main():
 
 
             elif augment_data_selected_option_index == 5:
-                output_files = []
-
-                print(" "*50 + "\033[91mAdding Downsampling Effects\033[0m")
-                print()
-
-                flag_fault_5 = True
-
-                # Target sampling frequencies for the downsampling effect
-                sampling_freqs = list(np.arange(args.lower_sampling_rate, args.current_sampling_rate, 5000))
-
-                # Sort the sampling frequencies in descending order
-                sampling_freqs.sort(reverse=True)
-
-                # Continue to augment the data until the STI threshold is met
-                while flag_fault_5:
-                
-                    # Empty list to store the Downsampled directories with particular sampling frequencies
-                    directories_made = []
-
-                    # Change the directory to the reference directory
-                    os.chdir(args.reference_dir)
-
-                    # List all the audio files in the reference directory (original audio files)
-                    reference_files = os.listdir(args.reference_dir)
-
-                    # Divide the list of audio files into n partitions (based on the number of SNR levels)
-                    audio_files = divide_list_randomly(reference_files, len(sampling_freqs))
-
-                    # Check the existence of directory to store the augmented data exists
-                    for i in range(len(sampling_freqs)):
-                        # Change the directory to the reference directory
-                        os.chdir(args.reference_dir)
-
-                        # Create a new directory to store the augmented data
-                        os.chdir("../")
-                        target_dir = os.getcwd() + "/augmented_data/downsampling_" + str(int(sampling_freqs[i])) + "/"
-                        make_directory(target_dir)
-                        directories_made.append(target_dir)
-
-                        # Reduce the volume of the audio files with given dB levels
-                        for audio in tqdm(audio_files[i], desc="Downsampling audio in Partition " + str(i+1)):
-                            input_audio = args.reference_dir + str(audio)
-                            # Append the identifier string to output audio file
-                            output_audio = target_dir + "ds_" + str(int(sampling_freqs[i])) + "_" + str(audio)
-
-                            # Append the output audio file to the list for text file creation
-                            output_files.append("ds_" + str(int(sampling_freqs[i])) + "_" + str(audio))
-
-                            downsampled_audio, sr = downsample_audio(input_audio, sampling_freqs[i], args.current_sampling_rate)
-
-                            sf.write(output_audio, downsampled_audio, sr)
-
-                        # Calculate the average STI for the augmented data
-                        target_dir = os.getcwd() + "/augmented_data/downsampling_" + str(int(sampling_freqs[i])) + "/"
-                        avg_sti = calculate_avg_sti(audio_files[i], target_dir, args.reference_dir, prefix = "ds_" + str(int(sampling_freqs[i])) + "_")
-
-                        # Print the average STI for the SNR level
-                        print(f"Average STI for Sampling Frequency {sampling_freqs[i]} Hz: {avg_sti}")
-
-                        # Check if the average STI is below the threshold
-                        if avg_sti < args.sti_threshold:
-                            # Remove the SNR level from the list
-                            print("\033[91mAverage STI is below the threshold.\033[0m Augmenting with modified Downsampling levels.")
-                            SNR_levels_dB.pop()
-
-                            # Remove the directories made
-                            for path in directories_made:
-                                shutil.rmtree(path)
-
-                            # Set the flag to True to continue augmenting the data
-                            flag_fault_5 = True
-                        else:
-                            # Set the flag to False to stop augmenting the data
-                            flag_fault_5 = False
-                        print()
-
-                print("\033[92mDownsampled the audios successfully!\033[0m")
-
-                # Create a text file to store the output audio files
-                os.chdir(args.reference_dir)
-                os.chdir("../")
-
-                with open('augmented_data/downsampling.txt', 'w') as file:
-                    for item in output_files:
-                        file.write(f"{item}\n")
-
-                # Cleanup: Merge the directories into one
-                current_path = os.getcwd() + "/augmented_data/"
-                make_directory(current_path + "downsampling/")
-                for path in directories_made:
-                    for file in os.listdir(path):
-                        shutil.move(path + file, current_path + "downsampling/" + file)
-                    os.rmdir(path)
-
+                add_downsampling_effects(args.reference_dir, args.lower_sampling_rate, args.current_sampling_rate, args.sti_threshold)
 
             elif augment_data_selected_option_index == 6:
-                output_files = []
-
-                print(" "*50 + "\033[91mPacket Loss Effects\033[0m")
-                print()
-
-                audio_files = os.listdir(args.reference_dir)
-
-                os.chdir(args.reference_dir)
-                os.chdir("../")
-
-                print(os.getcwd())
-
-                target_dir = os.getcwd() + "/augmented_data/packet_loss/"
-                make_directory(target_dir)
-
-                for audio in tqdm(audio_files, desc="Adding Packet Loss Effects"):
-                    input_audio = args.reference_dir + str(audio)
-                    output_audio = target_dir + "pl_" + str(audio)
-
-                    # Append the output audio file to the list for text file creation
-                    output_files.append("pl_" + str(audio))
-
-                    reference_audio, sr = librosa.load(input_audio, sr=None)
-
-                    loss_rate = args.packet_loss_rate
-                    packet_loss_audio = simulate_packet_loss(reference_audio, loss_rate)
-
-                    sf.write(output_audio, packet_loss_audio, sr)
-
-                avg_sti = calculate_avg_sti(audio_files, target_dir, args.reference_dir, prefix = "pl_")
-
-                # Print the average STI for the packet drop rate
-                print(f"Average STI for {loss_rate} packet drop rate: {avg_sti}")
-
-                if avg_sti < args.sti_threshold:
-                    print("\033[91mAverage STI is below the threshold.\033[0m Deleting augmented data.")
-
-                    # Remove the directory made
-                    shutil.rmtree(target_dir)
-
-                print()
-                print("\033[92mPacket Loss Effect added successfully!\033[0m")
-
-                # Create a text file to store the output audio files
-                os.chdir(args.reference_dir)
-                os.chdir("../")
-
-                with open('augmented_data/packet_loss.txt', 'w') as file:
-                    for item in output_files:
-                        file.write(f"{item}\n")
+                add_packet_loss_effects(args.reference_dir, args.packet_loss_rate, args.sti_threshold)
 
             elif augment_data_selected_option_index == 6:
                 continue

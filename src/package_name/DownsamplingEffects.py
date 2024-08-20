@@ -87,7 +87,7 @@ def add_downsampling_effects(reference_dir: str, lower_sampling_rate: int, curre
             if avg_sti < sti_threshold:
                 # Remove the SNR level from the list
                 print("\033[91mAverage STI is below the threshold.\033[0m Augmenting with modified Downsampling levels.")
-                SNR_levels_dB.pop()
+                sampling_freqs.pop()
 
                 # Remove the directories made
                 for path in directories_made:
@@ -103,7 +103,7 @@ def add_downsampling_effects(reference_dir: str, lower_sampling_rate: int, curre
     print("\033[92mDownsampled the audios successfully!\033[0m")
 
     # Create a text file to store the output audio files
-    os.chdir(args.reference_dir)
+    os.chdir(reference_dir)
     os.chdir("../")
 
     with open('augmented_data/downsampling.txt', 'w') as file:
