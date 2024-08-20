@@ -27,7 +27,7 @@ def add_white_noise(audioPath: str, snr_dB):
 
     return noisy_signal, sr
 
-def add_effects(SNR_levels_dB: list, reference_dir: str, sti_threshold: float):
+def add_gaussian_noise_effects(SNR_levels_dB: list, reference_dir: str, sti_threshold: float):
     output_files = []
 
     print(" "*50 + "\033[91mAdding Gaussian Noise\033[0m")

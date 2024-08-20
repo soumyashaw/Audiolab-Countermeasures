@@ -60,7 +60,7 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
 
     return noisy_signal, sr
 
-def add_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, sti_threshold):
+def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, sti_threshold):
     output_files = []
 
     print(" "*50 + "\033[91mAdding Ambient Noise\033[0m")

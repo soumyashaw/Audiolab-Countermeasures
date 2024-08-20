@@ -16,7 +16,11 @@ from scipy.signal import resample
 from package_name.sti import stiFromAudio, readwav
 from simple_term_menu import TerminalMenu
 
-from package_name.GaussianNoiseEffects import add_effects
+from package_name.GaussianNoiseEffects import add_gaussian_noise_effects
+from package_name.AmbientNoiseEffects import add_ambient_noise_effects
+from package_name.ReverberationEffects import add_reverberation_effects
+from package_name.AmplitudeReductionEffects import add_amplitude_reduction_effects
+from package_name.CodecEffects import add_codec_artifacts
 
 def main():
     # Define the menu options
@@ -81,282 +85,20 @@ def main():
 
             if augment_data_selected_option_index == 0:
                 SNR_levels_dB = [5, 10, 15, 20, 25, 30]
-                add_effects(SNR_levels_dB, args.reference_dir, args.sti_threshold)
+                add_gaussian_noise_effects(SNR_levels_dB, args.reference_dir, args.sti_threshold)
+
             elif augment_data_selected_option_index == 1:
-                output_files = []
-
-                print(" "*50 + "\033[91mAdding Ambient Noise\033[0m")
-                print()
-
-                # Enumerate the ambient noise files in the directory
-                noise_files = os.listdir(args.ambient_noise_dir)
-
-                # Declare the SNR levels for the ambient noise
                 SNR_levels_dB = [5, 10, 15, 20, 25, 30]
-
-                # List all the audio files in the reference directory (original audio files)
-                audio_files = os.listdir(args.reference_dir)
-
-                # Change the directory to the reference directory
-                os.chdir(args.reference_dir)
-
-                os.chdir("../")
-
-                # Make a directory to store the augmented data
-                make_directory(os.getcwd() + "/augmented_data/ambient_noise/")
-
-                target_dir = os.getcwd() + "/augmented_data/ambient_noise/"
-
-                for audio in tqdm(audio_files, desc="Adding Ambient Noise to Audios"):
-                    # Randomly choose the ambient noise file
-                    noise = random.choice(noise_files)
-
-                    # Randomly choose the SNR level
-                    SNR = random.choice(SNR_levels_dB)
-
-                    input_audio = args.reference_dir + str(audio)
-
-                    noise_audio = args.ambient_noise_dir + str(noise)
-
-                    # Append the identifier string to output audio file
-                    output_audio = f"{target_dir}amb{str(SNR)}dB_{str(audio)}"
-
-                    # Append the output audio file to the list for text file creation
-                    output_files.append("amb" + str(SNR) + "dB_" + str(audio))
-
-                    # Call the function to add white noise to the audio file
-                    noisy_signal, sample_rate = add_ambient_noise(input_audio, noise_audio, SNR)
-
-                    # Save the output with noise to a new file
-                    sf.write(output_audio, noisy_signal, sample_rate)
-
-                print()
-                print("\033[92mAmbient Noise added successfully!\033[0m")
-
-                # Create a text file to store the output audio files
-                os.chdir(args.reference_dir)
-                os.chdir("../")
-
-                with open('augmented_data/ambient_noise.txt', 'w') as file:
-                    for item in output_files:
-                        file.write(f"{item}\n")
-
+                add_ambient_noise_effects(SNR_levels_dB, args.reference_dir, args.ambient_noise_dir, args.sti_threshold)
+                
             elif augment_data_selected_option_index == 2:
-                output_files = []
-
-                print(" "*50 + "\033[91mAdding Reverberation\033[0m")
-                print()
-
-                # Collect the audio files from the reference directory
-                audio_files = os.listdir(args.reference_dir)
-
-                # Divide the audio files into two partitions for reverb effects
-                audio_files = divide_list_randomly(audio_files, 2)
-
-                # Change the directory to the reference directory
-                os.chdir(args.reference_dir)
-
-                os.chdir("../")
-
-                # Make a directory to store the augmented data
-                make_directory(os.getcwd() + "/augmented_data/reverberations/")
-
-                for i in range(len(audio_files)):
-                    for audio in tqdm(audio_files[i], desc="Adding Reverberation to Partition " + str(i+1)):
-                        input_audio = args.reference_dir + str(audio)
-                        output_audio = os.getcwd() + "/augmented_data/reverberations/" + "reverb_" + str(audio)
-
-                        # Call the function to add reverb effects to the audio file
-                        add_reverberation(input_audio, output_audio, i)
-
-                        # Append the output audio file to the list for text file creation
-                        output_files.append("reverb_" + str(audio))
-
-                    avg_sti = calculate_avg_sti(audio_files[i], os.getcwd() + "/augmented_data/reverberations/", args.reference_dir, prefix = "reverb_")
-
-                    # Print the average STI for the packet drop rate
-                    print(f"Average STI for Reverberations Type {i+1}: {avg_sti}")
-
-                    if avg_sti < args.sti_threshold:
-                        print("\033[91mAverage STI is below the threshold.\033[0m Deleting augmented data.")
-
-                        # Remove the directory made
-                        shutil.rmtree(target_dir)
-
-                        break
-
-                print()
-                print("\033[92mReverberations added successfully!\033[0m")
-
-                # Create a text file to store the output audio files
-                os.chdir(args.reference_dir)
-                os.chdir("../")
-
-                with open('augmented_data/reverberations.txt', 'w') as file:
-                    for item in output_files:
-                        file.write(f"{item}\n")
+                add_reverberation_effects(args.reference_dir, args.sti_threshold)
 
             elif augment_data_selected_option_index == 3:
-                output_files = []
-
-                print(" "*50 + "\033[91mAdding Muffling (Volume Reduction)\033[0m")
-                print()
-
-                audio_files = os.listdir(args.reference_dir)
-                audio = random.choice(audio_files)
-
-                # Load the audio file
-                reference_audio, sr = librosa.load(args.reference_dir + audio, sr=None)
-
-                target_rate = 16000
-
-                # Modify sampling rate to 16kHz (for STI calculation)
-                if sr != target_rate:
-                    number_of_samples = round(len(reference_audio) * float(target_rate) / sr)
-                    reference_audio = resample(reference_audio, number_of_samples)
-                    sr = target_rate
-
-                vol_dB = 100.0
-                dB_reduced = 1
-
-                while vol_dB > args.volume_threshold:
-                    db_reduction = -1 * dB_reduced
-                    reduction_factor = 10 ** (db_reduction / 20)
-
-                    volume_reduced_audio = reference_audio * reduction_factor
-
-                    vol_dB = find_volume(volume_reduced_audio)
-
-                    if vol_dB >= args.volume_threshold:
-                        dB_reduced += 1
-
-                vol_dBs = [float(i) for i in range(1, dB_reduced)]
+                add_amplitude_reduction_effects(args.reference_dir, args.volume_threshold)
                 
-                directories_made = []
-
-                # List all the audio files in the reference directory (original audio files)
-                reference_files = os.listdir(args.reference_dir)
-
-                # Divide the list of audio files into n partitions (based on the number of SNR levels)
-                audio_files = divide_list_randomly(reference_files, len(vol_dBs))
-
-                # Check the existence of directory to store the augmented data exists
-                for i in range(len(vol_dBs)):
-                    # Change the directory to the reference directory
-                    os.chdir(args.reference_dir)
-
-                    # Create a new directory to store the augmented data
-                    os.chdir("../")
-                    target_dir = os.getcwd() + "/augmented_data/vol_reduction_" + str(int(vol_dBs[i])) + "dB/"
-                    make_directory(target_dir)
-                    directories_made.append(target_dir)
-
-                    # Reduce the volume of the audio files with given dB levels
-                    for audio in tqdm(audio_files[i], desc="Reducing Volume in Partition " + str(i+1)):
-                        input_audio = args.reference_dir + str(audio)
-                        # Append the identifier string to output audio file
-                        output_audio = target_dir + "vol" + str(int(vol_dBs[i])) + "dB_" + str(audio)
-
-                        # Append the output audio file to the list for text file creation
-                        output_files.append("vol" + str(int(vol_dBs[i])) + "dB_" + str(audio))
-
-                        reference_audio, sr = librosa.load(input_audio, sr=None)
-
-                        db_reduction = -1 * vol_dBs[i]
-                        reduction_factor = 10 ** (db_reduction / 20)
-
-                        volume_reduced_audio = reference_audio * reduction_factor
-
-                        sf.write(output_audio, volume_reduced_audio, sr)
-
-                    print()
-
-                print("\033[92mVolume Reduced successfully!\033[0m")
-
-                # Create a text file to store the output audio files
-                os.chdir(args.reference_dir)
-                os.chdir("../")
-
-                with open('augmented_data/volume_reduction.txt', 'w') as file:
-                    for item in output_files:
-                        file.write(f"{item}\n")
-
-                # Cleanup: Merge the directories into one
-                current_path = os.getcwd() + "/augmented_data/"
-                make_directory(current_path + "volume_reduction/")
-                for path in directories_made:
-                    for file in os.listdir(path):
-                        shutil.move(path + file, current_path + "volume_reduction/" + file)
-                    os.rmdir(path)
-
             elif augment_data_selected_option_index == 4:
-                output_files = []
-
-                print(" "*50 + "\033[91mAdding Codec Losses\033[0m")
-                print()
-
-                codecs = ['mulaw', 'g722', 'alaw', 'opus']
-
-                # Empty list to store the Gaussian Noise directories with particular SNR levels
-                directories_made = []
-                
-                # Change the directory to the reference directory
-                os.chdir(args.reference_dir)
-
-                # List all the audio files in the reference directory (original audio files)
-                reference_files = os.listdir(args.reference_dir)
-
-                # Divide the list of audio files into n partitions (based on the number of SNR levels)
-                audio_files = divide_list_randomly(reference_files, len(codecs))
-
-                # Check the existence of directory to store the augmented data exists
-                for i in range(len(codecs)):
-                    # Change the directory to the reference directory
-                    os.chdir(args.reference_dir)
-
-                    # Create a new directory to store the augmented data
-                    os.chdir("../")
-                    target_dir = os.getcwd() + "/augmented_data/" + str(codecs[i]) + "/"
-                    make_directory(target_dir)
-                    directories_made.append(target_dir)
-
-                    # Add Gaussian Noise to the audio files with given SNR level
-                    for audio in tqdm(audio_files[i], desc="Adding Codec Losses to Partition " + str(i+1)):
-                        input_audio = args.reference_dir + str(audio)
-
-                        # Append the identifier string to output audio file
-                        output_audio = target_dir + str(codecs[i]) + "_" + str(audio)
-
-                        # Append the output audio file to the list for text file creation
-                        output_files.append(str(codecs[i]) + "_" + str(audio))
-
-                        # Call the function to add Codec losses to the audio file
-                        codec_added_audio = add_codec_loss(input_audio, "wav", codecs[i])
-
-                        if codecs[i] == 'opus':
-                            codec_added_audio.export(output_audio, format="wav")
-
-                        else:
-                            sf.write(output_audio, codec_added_audio, 16000)
-
-                print()
-                print("\033[92mCodec Artifacts added successfully!\033[0m")
-
-                # Create a text file to store the output audio files
-                os.chdir(args.reference_dir)
-                os.chdir("../")
-
-                with open('augmented_data/codec_losses.txt', 'w') as file:
-                    for item in output_files:
-                        file.write(f"{item}\n")
-
-                # Cleanup: Merge the directories into one
-                current_path = os.getcwd() + "/augmented_data/"
-                make_directory(current_path + "codec_losses/")
-                for path in directories_made:
-                    for file in os.listdir(path):
-                        shutil.move(path + file, current_path + "codec_losses/" + file)
-                    os.rmdir(path)
+                add_codec_artifacts(args.reference_dir)
 
 
             elif augment_data_selected_option_index == 5:
