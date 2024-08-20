@@ -53,12 +53,11 @@ def add_reverberation_effects(reference_dir: str, sti_threshold: float):
         print(f"Average STI for Reverberations Type {i+1}: {avg_sti}")
 
         if avg_sti < sti_threshold:
-            print("\033[91mAverage STI is below the threshold.\033[0m Deleting augmented data.")
+            print("\033[91mAverage STI is below the threshold.\033[0m Deleting augmented data. Try again with different parameters.")
 
             # Remove the directory made
             shutil.rmtree(target_dir)
-
-            break
+        print()
 
     print()
     print("\033[92mReverberations added successfully!\033[0m")

@@ -40,6 +40,12 @@ def make_directory(directory):
         if confirm.lower() == "y":
             shutil.rmtree(directory)
             os.makedirs(directory, exist_ok=True)
+        elif confirm.lower() == "n":
+            print("Exiting the program.")
+            exit(0)
+        else:  
+            print("Invalid input. Exiting the program.")
+            exit(0)
     return
 
 def calculate_avg_sti(target_audio_list, target_dir, reference_dir, prefix = ""):
