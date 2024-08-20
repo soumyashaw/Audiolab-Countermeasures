@@ -108,7 +108,7 @@ def add_gaussian_noise_effects(SNR_levels_dB: list, reference_dir: str, sti_thre
 
             print("2:flag_fault_0: ", flag_fault_0)
             _ = input("Press any key to continue...")
-        print("SNR Levels: ",SNR_levels_dB)
+            print("SNR Levels: ",SNR_levels_dB)
 
     print("\033[92mGaussian Noise added successfully!\033[0m")
 
