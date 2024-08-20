@@ -15,95 +15,13 @@ from pydub import AudioSegment
 from scipy.signal import resample
 from package_name.sti import stiFromAudio, readwav
 from simple_term_menu import TerminalMenu
-#from torchmetrics.audio import PerceptualEvaluationSpeechQuality
 
-def add_white_noise(audioPath, snr_dB):
-    # Load the audio file
-    signal, sr = librosa.load(audioPath, sr=None)
 
-    # Calculate the power of the signal
-    signal_power = np.sum(signal ** 2) / len(signal)
 
-    # Calculate the noise power based on the desired SNR
-    snr_linear = 10 ** (snr_dB / 10.0)
-    noise_power = signal_power / snr_linear
 
-    # Generate white Gaussian noise with the same length as the signal
-    noise = np.random.normal(scale=np.sqrt(noise_power), size=len(signal))
 
-    # Add the noise to the signal
-    noisy_signal = signal + noise
 
-    return noisy_signal, sr
 
-def divide_list_randomly(lst, n):
-    #Shuffle the list to ensure randomness
-    random.shuffle(lst)
-    
-    #Determine the size of each part
-    avg = len(lst) // n
-    remainder = len(lst) % n
-
-    #Create the parts
-    parts = []
-    start = 0
-
-    for i in range(n):
-        # Determine the end index for this part
-        end = start + avg + (1 if i < remainder else 0)
-        
-        # Append the sliced part to the list of parts
-        parts.append(lst[start:end])
-        
-        # Move the start index to the next section
-        start = end
-
-    return parts
-
-def make_directory(directory):
-    if not os.path.exists(directory):
-        # Make a directory to store the augmented data
-        os.makedirs(directory, exist_ok=True)
-    else:
-        print("Directory already exists. Confirm 'y' to overwrite the data.")
-        confirm = input("Do you want to overwrite the data? (y/n): ")
-        if confirm.lower() == "y":
-            shutil.rmtree(directory)
-            os.makedirs(directory, exist_ok=True)
-    return
-
-def calculate_avg_sti(target_audio_list, target_dir, reference_dir, prefix = ""):
-
-    sti_total = 0.0
-
-    for audio in tqdm(target_audio_list, desc="Calculating Average STI"):
-        target_Audio, degrRate  = readwav(target_dir + prefix + str(audio))
-        reference_audio, refRate  = readwav(reference_dir + str(audio))
-
-        try:
-            STI = stiFromAudio(reference_audio, target_Audio, refRate)
-            sti_total += STI
-
-        except Exception as e:
-            print("Error in STI calculation:", e)
-            sti_total += 0.0
-            continue
-        
-    return sti_total/len(target_audio_list)
-
-def find_volume(audio):
-    rms = np.sqrt(np.mean(audio**2))
-
-    # Convert the RMS value to decibels (dB)
-    return 20 * np.log10(rms)
-
-def simulate_packet_loss(audio_data, loss_rate):
-    num_samples = len(audio_data)
-    lost_samples = int(loss_rate * num_samples)
-    indices_to_drop = np.random.choice(num_samples, lost_samples, replace=False)
-
-    simulated_data = np.delete(audio_data, indices_to_drop)
-    return simulated_data
 
 def add_codec_loss(audioPath, format, codec: str):
     if codec == 'mulaw' or codec == 'alaw' or codec == 'g722':
