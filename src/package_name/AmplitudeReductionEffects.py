@@ -106,7 +106,7 @@ def add_amplitude_reduction_effects(reference_dir: str, volume_threshold: float)
     if len(vol_dBs) > 0:
         # Cleanup: Merge the directories into one
         current_path = os.getcwd() + "/augmented_data/"
-        make_directory(current_path + "volume_reduction/")
+        make_directory(current_path + "volume_reduction/", ignore=True)
         for path in directories_made:
             for file in os.listdir(path):
                 shutil.move(path + file, current_path + "volume_reduction/" + file)

@@ -519,7 +519,10 @@ def sti(modulations, coherences, minCoherence=0.8):
     snrCounts = (snr / snr).sum(axis=1)           # count SNRs
     snrCounts = snrCounts.data                    # remove masking
     octaveBandSNR = snr.sum(axis=1) / snrCounts   # calc average SNR
-    alpha = 7 * (snrCounts / snrCounts.sum())     # calc alpha weight
+    if snrCounts.sum() == 0:
+        alpha = 7 * (snrCounts / 1)     # calc alpha weight
+    else:
+        alpha = 7 * (snrCounts / snrCounts.sum())     # calc alpha weight
 
     # octave band weighting factors, Steeneken and Houtgast (1985)
     w = [0.129, 0.143, 0.114, 0.114, 0.186, 0.171, 0.143]

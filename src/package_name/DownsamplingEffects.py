@@ -115,7 +115,7 @@ def add_downsampling_effects(reference_dir: str, lower_sampling_rate: int, curre
     # Cleanup: Merge the directories into one
     if len(sampling_freqs) > 0:
         current_path = os.getcwd() + "/augmented_data/"
-        make_directory(current_path + "downsampling/")
+        make_directory(current_path + "downsampling/", ignore=True)
         for path in directories_made:
             for file in os.listdir(path):
                 shutil.move(path + file, current_path + "downsampling/" + file)

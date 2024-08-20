@@ -108,7 +108,7 @@ def add_codec_artifacts(reference_dir: str):
 
     # Cleanup: Merge the directories into one
     current_path = os.getcwd() + "/augmented_data/"
-    make_directory(current_path + "codec_losses/")
+    make_directory(current_path + "codec_losses/", ignore=True)
     for path in directories_made:
         for file in os.listdir(path):
             shutil.move(path + file, current_path + "codec_losses/" + file)

@@ -119,7 +119,7 @@ def add_gaussian_noise_effects(SNR_levels_dB: list, reference_dir: str, sti_thre
     if len(SNR_levels_dB) > 0:
         # Cleanup: Merge the directories into one
         current_path = os.getcwd() + "/augmented_data/"
-        make_directory(current_path + "gaussian_noise/")
+        make_directory(current_path + "gaussian_noise/", ignore=True)
         for path in directories_made:
             for file in os.listdir(path):
                 shutil.move(path + file, current_path + "gaussian_noise/" + file)

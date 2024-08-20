@@ -30,22 +30,26 @@ def divide_list_randomly(lst, n):
 
     return parts
 
-def make_directory(directory):
+def make_directory(directory, ignore=False):
     if not os.path.exists(directory):
         # Make a directory to store the augmented data
         os.makedirs(directory, exist_ok=True)
     else:
-        print("Directory already exists. Confirm 'y' to overwrite the data.")
-        confirm = input("Do you want to overwrite the data? (y/n): ")
-        if confirm.lower() == "y":
+        if ignore:
             shutil.rmtree(directory)
             os.makedirs(directory, exist_ok=True)
-        elif confirm.lower() == "n":
-            print("Exiting the program.")
-            exit(0)
-        else:  
-            print("Invalid input. Exiting the program.")
-            exit(0)
+        else:
+            print("Directory already exists. Confirm 'y' to overwrite the data.")
+            confirm = input("Do you want to overwrite the data? (y/n): ")
+            if confirm.lower() == "y":
+                shutil.rmtree(directory)
+                os.makedirs(directory, exist_ok=True)
+            elif confirm.lower() == "n":
+                print("Exiting the program.")
+                exit(0)
+            else:  
+                print("Invalid input. Exiting the program.")
+                exit(0)
     return
 
 def calculate_avg_sti(target_audio_list, target_dir, reference_dir, prefix = ""):
