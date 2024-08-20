@@ -183,12 +183,12 @@ def octaveBandFilter(audio, hz,
     # process each octave band
     for f in octaveBands:
         bands = str(octaveBands[:octaveBands.index(f) + 1]).strip('[]')
-        statusStr = "Octave band filtering audio at: " + bands
-        unitStr = "Hz ".rjust(80 - len(statusStr))
-        stdout.write(statusStr)
-        stdout.write(unitStr)
-        stdout.write('\r')
-        stdout.flush()
+        #statusStr = "Octave band filtering audio at: " + bands
+        #unitStr = "Hz ".rjust(80 - len(statusStr))
+        #stdout.write(statusStr)
+        #stdout.write(unitStr)
+        #stdout.write('\r')
+        #stdout.flush()
     
         # filter the output at the octave band f
         f1 = f / sqrt(2)
