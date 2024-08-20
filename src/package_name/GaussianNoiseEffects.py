@@ -100,7 +100,8 @@ def add_gaussian_noise_effects(SNR_levels_dB: list, reference_dir: str, sti_thre
                 # Set the flag to False to stop augmenting the data
                 flag_fault_0 = False
 
-            print()
+            print("flag_fault_0: ", flag_fault_0)
+            _ = input("Press any key to continue...")
 
     print("\033[92mGaussian Noise added successfully!\033[0m")
 
