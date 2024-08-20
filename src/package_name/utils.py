@@ -4,7 +4,7 @@ import os
 import random
 import shutil
 from tqdm import tqdm
-from sti import stiFromAudio, readwav
+from package_name.sti import stiFromAudio, readwav
 
 def divide_list_randomly(lst, n):
     #Shuffle the list to ensure randomness
