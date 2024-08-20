@@ -95,6 +95,7 @@ def add_downsampling_effects(reference_dir: str, lower_sampling_rate: int, curre
 
                 # Set the flag to True to continue augmenting the data
                 flag_fault_5 = True
+                break
             else:
                 # Set the flag to False to stop augmenting the data
                 flag_fault_5 = False
