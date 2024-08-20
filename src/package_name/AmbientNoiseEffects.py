@@ -51,6 +51,7 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
 
         # Calculate the STI of the noisy signal
         STI = stiFromAudio(signal, noisy_signal, sr)
+        print(f"SNR: {snr_dB} dB, STI: {STI}")
 
         if STI > sti_threshold:
             flag_fault = False
