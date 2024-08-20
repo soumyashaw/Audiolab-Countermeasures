@@ -8,7 +8,6 @@ import librosa
 import argparse
 import torchaudio
 import numpy as np
-from pesq import pesq
 from tqdm import tqdm
 import soundfile as sf
 from scipy.io import wavfile
@@ -73,46 +72,24 @@ def make_directory(directory):
             os.makedirs(directory, exist_ok=True)
     return
 
-def calculate_avg_pesq(target_audio_list, target_dir, reference_dir, prefix = ""):
+def calculate_avg_sti(target_audio_list, target_dir, reference_dir, prefix = ""):
 
-    pesq_total = 0.0
-    #pesq_total2 = 0.0
+    sti_total = 0.0
 
-    # Test
-    #wb_pesq = PerceptualEvaluationSpeechQuality(16000, 'wb')
-
-    for audio in tqdm(target_audio_list, desc="Calculating Average PESQ"):
-        degrRate, target_Audio = wavfile.read(target_dir + prefix + str(audio))
-        refRate, reference_audio = wavfile.read(reference_dir + str(audio))
-
-        target_rate = 16000
-
-        if degrRate != target_rate:
-            number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
-            target_Audio = resample(target_Audio, number_of_samples)
-            degrRate = target_rate
-
-        if refRate != target_rate:
-            number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
-            reference_audio = resample(reference_audio, number_of_samples)
-            refRate = target_rate
+    for audio in tqdm(target_audio_list, desc="Calculating Average STI"):
+        target_Audio, degrRate  = readwav(target_dir + prefix + str(audio))
+        reference_audio, refRate  = readwav(reference_dir + str(audio))
 
         try:
-            PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
-            pesq_total += PESQ
-
-            # Test
-            #PESQ2 = wb_pesq(reference_audio, target_Audio)
-            #pesq_total2 += PESQ2
+            STI = stiFromAudio(reference_audio, target_Audio, refRate)
+            sti_total += STI
 
         except Exception as e:
-            print("Error in PESQ calculation:", e)
-            pesq_total += 0.0
-            #pesq_total2 += 0.0
+            print("Error in STI calculation:", e)
+            sti_total += 0.0
             continue
         
-    #print("PESQ2: ", pesq_total2/len(target_audio_list))
-    return pesq_total/len(target_audio_list)
+    return sti_total/len(target_audio_list)
 
 def find_volume(audio):
     rms = np.sqrt(np.mean(audio**2))
@@ -226,31 +203,16 @@ def add_ambient_noise(audioPath, noisePath, snr_dB):
         # Add the noise to the signal
         noisy_signal = signal + scaled_noise
 
-        target_rate = 16000
+        # Calculate the STI of the noisy signal
+        STI = stiFromAudio(signal, noisy_signal, sr)
 
-        if sr != target_rate:
-            number_of_samples = round(len(signal) * float(target_rate) / sr)
-            temp_signal = resample(signal, number_of_samples)
-            temp_noisy_signal = resample(noisy_signal, number_of_samples)
-            temp_sr = target_rate
-
-            # Calculate the PESQ of the noisy signal
-            PESQ = pesq(temp_sr, temp_signal, temp_noisy_signal, 'wb')
-
-        else:
-            # Calculate the PESQ of the noisy signal
-            PESQ = pesq(sr, signal, noisy_signal, 'wb')
-        
-
-        if PESQ > args.pesq_threshold:
+        if STI > args.sti_threshold:
             flag_fault = False
         else:
             snr_dB += 5
             flag_fault = True
 
     return noisy_signal, sr
-
-
 
 
 
@@ -286,18 +248,6 @@ def main():
             for audio in tqdm(reference_files):
                 target_Audio, degrRate  = readwav(args.target_dir + str(audio))
                 reference_audio, refRate  = readwav(args.reference_dir + str(audio))
-
-                """target_rate = 16000
-
-                if degrRate != target_rate:
-                    number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
-                    target_Audio = resample(target_Audio, number_of_samples)
-                    degrRate = target_rate
-
-                if refRate != target_rate:
-                    number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
-                    reference_audio = resample(reference_audio, number_of_samples)
-                    refRate = target_rate"""
 
                 try:
                     STI = stiFromAudio(reference_audio, target_Audio, refRate)
@@ -337,7 +287,7 @@ def main():
                 SNR_levels_dB = [5, 10, 15, 20, 25, 30]
                 SNR_levels_dB.sort(reverse=True)
 
-                # Continue to augment the data until the PESQ threshold is met
+                # Continue to augment the data until the STI threshold is met
                 while flag_fault_0:
                     # Empty list to store the Gaussian Noise directories with particular SNR levels
                     directories_made = []
@@ -378,17 +328,17 @@ def main():
                             # Save the output with noise to a new file
                             sf.write(output_audio, noisy_signal, sample_rate)
 
-                        # Calculate the average PESQ for the augmented data
+                        # Calculate the average STI for the augmented data
                         target_dir = os.getcwd() + "/augmented_data/gaussian_noise_" + str(SNR_levels_dB[i]) + "dB/"
-                        avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
+                        avg_sti = calculate_avg_sti(audio_files[i], target_dir, args.reference_dir, prefix = "g" + str(SNR_levels_dB[i]) + "dB_")
 
-                        # Print the average PESQ for the SNR level
-                        print("Average PESQ for SNR level ", SNR_levels_dB[i], "dB: ", avg_pesq)
+                        # Print the average STI for the SNR level
+                        print("Average STI for SNR level ", SNR_levels_dB[i], "dB: ", avg_sti)
 
-                        # Check if the average PESQ is below the threshold
-                        if avg_pesq < args.pesq_threshold:
+                        # Check if the average STI is below the threshold
+                        if avg_sti < args.sti_threshold:
                             # Remove the SNR level from the list
-                            print("\033[91mAverage PESQ is below the threshold.\033[0m Augmenting with modified SNR levels.")
+                            print("\033[91mAverage STI is below the threshold.\033[0m Augmenting with modified SNR levels.")
                             SNR_levels_dB.pop()
 
                             # Remove the directories made
@@ -511,13 +461,13 @@ def main():
                         # Append the output audio file to the list for text file creation
                         output_files.append("reverb_" + str(audio))
 
-                    avg_pesq = calculate_avg_pesq(audio_files[i], os.getcwd() + "/augmented_data/reverberations/", args.reference_dir, prefix = "reverb_")
+                    avg_sti = calculate_avg_sti(audio_files[i], os.getcwd() + "/augmented_data/reverberations/", args.reference_dir, prefix = "reverb_")
 
-                    # Print the average PESQ for the packet drop rate
-                    print(f"Average PESQ for Reverberations Type {i+1}: {avg_pesq}")
+                    # Print the average STI for the packet drop rate
+                    print(f"Average STI for Reverberations Type {i+1}: {avg_sti}")
 
-                    if avg_pesq < args.pesq_threshold:
-                        print("\033[91mAverage PESQ is below the threshold.\033[0m Deleting augmented data.")
+                    if avg_sti < args.sti_threshold:
+                        print("\033[91mAverage STI is below the threshold.\033[0m Deleting augmented data.")
 
                         # Remove the directory made
                         shutil.rmtree(target_dir)
@@ -549,7 +499,7 @@ def main():
 
                 target_rate = 16000
 
-                # Modify sampling rate to 16kHz (for PESQ calculation)
+                # Modify sampling rate to 16kHz (for STI calculation)
                 if sr != target_rate:
                     number_of_samples = round(len(reference_audio) * float(target_rate) / sr)
                     reference_audio = resample(reference_audio, number_of_samples)
@@ -712,7 +662,7 @@ def main():
                 # Sort the sampling frequencies in descending order
                 sampling_freqs.sort(reverse=True)
 
-                # Continue to augment the data until the PESQ threshold is met
+                # Continue to augment the data until the STI threshold is met
                 while flag_fault_5:
                 
                     # Empty list to store the Downsampled directories with particular sampling frequencies
@@ -751,17 +701,17 @@ def main():
 
                             sf.write(output_audio, downsampled_audio, sr)
 
-                        # Calculate the average PESQ for the augmented data
+                        # Calculate the average STI for the augmented data
                         target_dir = os.getcwd() + "/augmented_data/downsampling_" + str(int(sampling_freqs[i])) + "/"
-                        avg_pesq = calculate_avg_pesq(audio_files[i], target_dir, args.reference_dir, prefix = "ds_" + str(int(sampling_freqs[i])) + "_")
+                        avg_sti = calculate_avg_sti(audio_files[i], target_dir, args.reference_dir, prefix = "ds_" + str(int(sampling_freqs[i])) + "_")
 
-                        # Print the average PESQ for the SNR level
-                        print(f"Average PESQ for Sampling Frequency {sampling_freqs[i]} Hz: {avg_pesq}")
+                        # Print the average STI for the SNR level
+                        print(f"Average STI for Sampling Frequency {sampling_freqs[i]} Hz: {avg_sti}")
 
-                        # Check if the average PESQ is below the threshold
-                        if avg_pesq < args.pesq_threshold:
+                        # Check if the average STI is below the threshold
+                        if avg_sti < args.sti_threshold:
                             # Remove the SNR level from the list
-                            print("\033[91mAverage PESQ is below the threshold.\033[0m Augmenting with modified Downsampling levels.")
+                            print("\033[91mAverage STI is below the threshold.\033[0m Augmenting with modified Downsampling levels.")
                             SNR_levels_dB.pop()
 
                             # Remove the directories made
@@ -824,13 +774,13 @@ def main():
 
                     sf.write(output_audio, packet_loss_audio, sr)
 
-                avg_pesq = calculate_avg_pesq(audio_files, target_dir, args.reference_dir, prefix = "pl_")
+                avg_sti = calculate_avg_sti(audio_files, target_dir, args.reference_dir, prefix = "pl_")
 
-                # Print the average PESQ for the packet drop rate
-                print(f"Average PESQ for {loss_rate} packet drop rate: {avg_pesq}")
+                # Print the average STI for the packet drop rate
+                print(f"Average STI for {loss_rate} packet drop rate: {avg_sti}")
 
-                if avg_pesq < args.pesq_threshold:
-                    print("\033[91mAverage PESQ is below the threshold.\033[0m Deleting augmented data.")
+                if avg_sti < args.sti_threshold:
+                    print("\033[91mAverage STI is below the threshold.\033[0m Deleting augmented data.")
 
                     # Remove the directory made
                     shutil.rmtree(target_dir)
@@ -860,10 +810,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/reverbEcho/")
     parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/original_wav/")
-    parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.0)
+    parser.add_argument('-s', '--sti_threshold', type=float, help="STI threshold for the augmented data", default=1.0)
     parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-35)
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
-    parser.add_argument('-s', '--lower_sampling_rate', type=int, help="Lower bound sampling rate to be applied to the audios", default=3400)
+    parser.add_argument('-m', '--lower_sampling_rate', type=int, help="Lower bound sampling rate to be applied to the audios", default=3400)
     parser.add_argument('-e', '--current_sampling_rate', type=int, help="Current sampling rate of the audio files", default=16000)
     parser.add_argument('-n', '--ambient_noise_dir', type=str, help="path to the ambient noise files to be used", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/ambient_noise/")
     args = parser.parse_args()
