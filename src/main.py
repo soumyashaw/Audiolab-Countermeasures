@@ -14,6 +14,7 @@ import soundfile as sf
 from scipy.io import wavfile
 from pydub import AudioSegment
 from scipy.signal import resample
+from package_name.sti import stiFromAudio, readwav
 from simple_term_menu import TerminalMenu
 #from torchmetrics.audio import PerceptualEvaluationSpeechQuality
 
@@ -270,7 +271,7 @@ def main():
 
         # Perform actions based on the selected option
         if selected_option_index == 0:
-            print(" "*50 + "\033[91mCalculating Average PESQ\033[0m" + " "*50)
+            print(" "*50 + "\033[91mCalculating Average STI\033[0m" + " "*50)
             print()
             print("Target Directory: ", args.target_dir)
             print("Reference Directory: ", args.reference_dir)
@@ -280,13 +281,13 @@ def main():
             target_files.sort()
             reference_files.sort()
 
-            pesq_total = 0.0
+            sti_total = 0.0
 
             for audio in tqdm(reference_files):
-                degrRate, target_Audio = wavfile.read(args.target_dir + str(audio))
-                refRate, reference_audio = wavfile.read(args.reference_dir + str(audio))
+                target_Audio, degrRate  = readwav(args.target_dir + str(audio))
+                reference_audio, refRate  = readwav(args.reference_dir + str(audio))
 
-                target_rate = 16000
+                """target_rate = 16000
 
                 if degrRate != target_rate:
                     number_of_samples = round(len(target_Audio) * float(target_rate) / degrRate)
@@ -296,18 +297,18 @@ def main():
                 if refRate != target_rate:
                     number_of_samples = round(len(reference_audio) * float(target_rate) / refRate)
                     reference_audio = resample(reference_audio, number_of_samples)
-                    refRate = target_rate
+                    refRate = target_rate"""
 
                 try:
-                    PESQ = pesq(degrRate, reference_audio, target_Audio, 'wb')
-                    pesq_total += PESQ
+                    STI = stiFromAudio(reference_audio, target_Audio, refRate)
+                    sti_total += STI
 
                 except Exception as e:
-                    print("Error in PESQ calculation:", e)
-                    pesq_total += 0.0
+                    print("Error in STI calculation:", e)
+                    sti_total += 0.0
                     continue
                 
-            print("\033[91mAverage PESQ\033[0m: ", pesq_total/len(reference_files))
+            print("\033[91mAverage STI\033[0m: ", sti_total/len(reference_files))
             
 
         elif selected_option_index == 1:
@@ -858,7 +859,7 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/reverbEcho/")
-    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/TrialData/OriginalData/")
+    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/BaselineDataset/LA/ASVspoof2019_LA_eval/original_wav/")
     parser.add_argument('-p', '--pesq_threshold', type=float, help="PESQ threshold for the augmented data", default=1.0)
     parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-35)
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
