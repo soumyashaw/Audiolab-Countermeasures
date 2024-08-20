@@ -108,17 +108,19 @@ def add_gaussian_noise_effects(SNR_levels_dB: list, reference_dir: str, sti_thre
     print("\033[92mGaussian Noise added successfully!\033[0m")
 
     # Create a text file to store the output audio files
-    os.chdir(reference_dir)
-    os.chdir("../")
+    if len(output_files) > 0:
+        os.chdir(reference_dir)
+        os.chdir("../")
 
-    with open('augmented_data/gaussian_noise.txt', 'w') as file:
-        for item in output_files:
-            file.write(f"{item}\n")
+        with open('augmented_data/gaussian_noise.txt', 'w') as file:
+            for item in output_files:
+                file.write(f"{item}\n")
 
-    # Cleanup: Merge the directories into one
-    current_path = os.getcwd() + "/augmented_data/"
-    make_directory(current_path + "gaussian_noise/")
-    for path in directories_made:
-        for file in os.listdir(path):
-            shutil.move(path + file, current_path + "gaussian_noise/" + file)
-        os.rmdir(path)
+    if len(SNR_levels_dB) > 0:
+        # Cleanup: Merge the directories into one
+        current_path = os.getcwd() + "/augmented_data/"
+        make_directory(current_path + "gaussian_noise/")
+        for path in directories_made:
+            for file in os.listdir(path):
+                shutil.move(path + file, current_path + "gaussian_noise/" + file)
+            os.rmdir(path)

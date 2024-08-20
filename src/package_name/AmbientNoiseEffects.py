@@ -114,10 +114,11 @@ def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, s
     print()
     print("\033[92mAmbient Noise added successfully!\033[0m")
 
-    # Create a text file to store the output audio files
-    os.chdir(reference_dir)
-    os.chdir("../")
+    if len(output_files) > 0:
+        # Create a text file to store the output audio files
+        os.chdir(reference_dir)
+        os.chdir("../")
 
-    with open('augmented_data/ambient_noise.txt', 'w') as file:
-        for item in output_files:
-            file.write(f"{item}\n")
+        with open('augmented_data/ambient_noise.txt', 'w') as file:
+            for item in output_files:
+                file.write(f"{item}\n")

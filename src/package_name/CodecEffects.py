@@ -97,13 +97,14 @@ def add_codec_artifacts(reference_dir: str):
     print()
     print("\033[92mCodec Artifacts added successfully!\033[0m")
 
-    # Create a text file to store the output audio files
-    os.chdir(reference_dir)
-    os.chdir("../")
+    if len(output_files) > 0:
+        # Create a text file to store the output audio files
+        os.chdir(reference_dir)
+        os.chdir("../")
 
-    with open('augmented_data/codec_losses.txt', 'w') as file:
-        for item in output_files:
-            file.write(f"{item}\n")
+        with open('augmented_data/codec_losses.txt', 'w') as file:
+            for item in output_files:
+                file.write(f"{item}\n")
 
     # Cleanup: Merge the directories into one
     current_path = os.getcwd() + "/augmented_data/"

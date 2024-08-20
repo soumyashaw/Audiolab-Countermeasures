@@ -61,9 +61,10 @@ def add_packet_loss_effects(reference_dir: str, packet_loss_rate: float, sti_thr
     print("\033[92mPacket Loss Effect added successfully!\033[0m")
 
     # Create a text file to store the output audio files
-    os.chdir(reference_dir)
-    os.chdir("../")
+    if len(output_files) > 0:
+        os.chdir(reference_dir)
+        os.chdir("../")
 
-    with open('augmented_data/packet_loss.txt', 'w') as file:
-        for item in output_files:
-            file.write(f"{item}\n")
+        with open('augmented_data/packet_loss.txt', 'w') as file:
+            for item in output_files:
+                file.write(f"{item}\n")

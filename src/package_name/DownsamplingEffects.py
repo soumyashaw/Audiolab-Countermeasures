@@ -103,17 +103,19 @@ def add_downsampling_effects(reference_dir: str, lower_sampling_rate: int, curre
     print("\033[92mDownsampled the audios successfully!\033[0m")
 
     # Create a text file to store the output audio files
-    os.chdir(reference_dir)
-    os.chdir("../")
+    if len(output_files) > 0:
+        os.chdir(reference_dir)
+        os.chdir("../")
 
-    with open('augmented_data/downsampling.txt', 'w') as file:
-        for item in output_files:
-            file.write(f"{item}\n")
+        with open('augmented_data/downsampling.txt', 'w') as file:
+            for item in output_files:
+                file.write(f"{item}\n")
 
     # Cleanup: Merge the directories into one
-    current_path = os.getcwd() + "/augmented_data/"
-    make_directory(current_path + "downsampling/")
-    for path in directories_made:
-        for file in os.listdir(path):
-            shutil.move(path + file, current_path + "downsampling/" + file)
-        os.rmdir(path)
+    if len(sampling_freqs) > 0:
+        current_path = os.getcwd() + "/augmented_data/"
+        make_directory(current_path + "downsampling/")
+        for path in directories_made:
+            for file in os.listdir(path):
+                shutil.move(path + file, current_path + "downsampling/" + file)
+            os.rmdir(path)

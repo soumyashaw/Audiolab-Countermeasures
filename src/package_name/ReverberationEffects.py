@@ -57,17 +57,19 @@ def add_reverberation_effects(reference_dir: str, sti_threshold: float):
 
             # Remove the directory made
             shutil.rmtree(target_dir)
+            break
         print()
 
     print()
     print("\033[92mReverberations added successfully!\033[0m")
 
     # Create a text file to store the output audio files
-    os.chdir(reference_dir)
-    os.chdir("../")
+    if len(output_files) > 0:
+        os.chdir(reference_dir)
+        os.chdir("../")
 
-    with open('augmented_data/reverberations.txt', 'w') as file:
-        for item in output_files:
-            file.write(f"{item}\n")
+        with open('augmented_data/reverberations.txt', 'w') as file:
+            for item in output_files:
+                file.write(f"{item}\n")
 
     return
