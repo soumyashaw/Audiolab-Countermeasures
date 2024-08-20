@@ -1,12 +1,13 @@
 #!/usr/bin/python
 
 import os
+import shutil
 import torchaudio
+from tqdm import tqdm
 import soundfile as sf
 from pydub import AudioSegment
-from tqdm import tqdm
-import shutil
-from utils import divide_list_randomly, make_directory
+
+from package_name.utils import divide_list_randomly, make_directory
 
 def add_codec_loss(audioPath, format, codec: str):
     if codec == 'mulaw' or codec == 'alaw' or codec == 'g722':
