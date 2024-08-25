@@ -77,7 +77,8 @@ def main():
             augment_data_selected_option_index = augment_data_menu.show()
 
             if augment_data_selected_option_index == 0:
-                SNR_levels_dB = [5, 10, 15, 20, 25, 30]
+                #SNR_levels_dB = [5, 10, 15, 20, 25, 30]
+                SNR_levels_dB = [5, 6, 7, 8, 9, 10]
                 add_gaussian_noise_effects(SNR_levels_dB, args.reference_dir, args.sti_threshold)
 
             elif augment_data_selected_option_index == 1:
