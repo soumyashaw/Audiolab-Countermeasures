@@ -183,45 +183,36 @@ def octaveBandFilter(audio, hz,
     # process each octave band
     for f in octaveBands:
         bands = str(octaveBands[:octaveBands.index(f) + 1]).strip('[]')
-        #statusStr = "Octave band filtering audio at: " + bands
-        #unitStr = "Hz ".rjust(80 - len(statusStr))
-        #stdout.write(statusStr)
-        #stdout.write(unitStr)
-        #stdout.write('\r')
-        #stdout.flush()
-    
-        # filter the output at the octave band f
+
+        # Calculate filter bounds for the octave band
         f1 = f / sqrt(2)
         f2 = f * sqrt(2)
 
-        # for some odd reason the band-pass butterworth doesn't work right
-        # when the filter order is high (above 3). likely a SciPy issue?
-        # also, butter likes to complain about possibly useless results when
-        # calculating filter coefficients for high order (above 4) low-pass
-        # filters with relatively low knee frequencies (relative to nyquist F).
-        # perhaps I just don't know how digital butterworth filters work and
-        # their limitations but I think this is odd.
-        # the issue described here will be sent to their mailing list
-        if f < max(octaveBands):
-            with catch_warnings():      # suppress the spurious warnings given
-                simplefilter('ignore')  # under certain conditions
-                b1,a1 = butter(butterOrd, f1/nyquist, btype='high')
-                b2,a2 = butter(butterOrd, f2/nyquist, btype='low')
-            
-            filtOut = lfilter(b1, a1, audio)   # high-pass raw audio at f1
-            filtOut = lfilter(b2, a2, filtOut) # low-pass after high-pass at f1
-        else:
+        # Ensure the critical frequencies are within the valid range (0, nyquist)
+        if f1 < 0 or f1 >= nyquist or f2 >= nyquist:
+            print(f"Skipping filter for octave band centered at {f} Hz due to invalid frequencies.")
+            continue
+
+        # High-pass filter
+        with catch_warnings():
+            simplefilter('ignore')
+            b1, a1 = butter(butterOrd, f1 / nyquist, btype='high')
+
+        filtOut = lfilter(b1, a1, audio)
+
+        # Low-pass filter
+        if f2 < nyquist:
             with catch_warnings():
                 simplefilter('ignore')
-                b1,a1 = butter(butterOrd, f/nyquist, btype='high')
-            filtOut = lfilter(b1, a1, audio)
+                b2, a2 = butter(butterOrd, f2 / nyquist, btype='low')
+            filtOut = lfilter(b2, a2, filtOut)
 
         filtOut = array(filtOut)**2
         b = firwin(hammingLength, 25.0, fs=hz)
         filtOut = lfilter(b, 1, filtOut)
         filtOut = filtOut * -1.0
 
-        # stack-up octave band filtered audio
+        # Stack-up octave band filtered audio
         try:
             octaveBandAudio = vstack((octaveBandAudio, filtOut))
         except:
