@@ -13,7 +13,7 @@ from numpy import append,array,clip,log10,nonzero,ones,power,reshape
 from numpy import searchsorted,shape,sqrt,sum,vstack,zeros
 from numpy.ma import masked_array
 from scipy.io import wavfile
-from scipy.signal import butter,firwin,decimate,lfilter
+from scipy.signal import butter,firwin,decimate,lfilter, resample
 from sys import stdout
 from warnings import catch_warnings,simplefilter
 
@@ -182,7 +182,6 @@ def octaveBandFilter(audio, hz,
 
     # process each octave band
     for f in octaveBands:
-        print("Filtering audio at",f,"Hz")
         bands = str(octaveBands[:octaveBands.index(f) + 1]).strip('[]')
         #statusStr = "Octave band filtering audio at: " + bands
         #unitStr = "Hz ".rjust(80 - len(statusStr))
@@ -213,7 +212,6 @@ def octaveBandFilter(audio, hz,
             filtOut = lfilter(b2, a2, filtOut) # low-pass after high-pass at f1
         else:
             with catch_warnings():
-                print("Warning", f/nyquist)
                 simplefilter('ignore')
                 b1,a1 = butter(butterOrd, f/nyquist, btype='high')
             filtOut = lfilter(b1, a1, audio)
@@ -690,10 +688,12 @@ def readwav(path):
     
         Audio sample rate in hertz
     """
-    wav = wavfile.read(path)
-    
-    rate = wav[0]
-    audio = array(wav[1])
+    rate, audio = wavfile.read(path)
+
+    if rate <=16000:
+        num_samples = int(len(audio) * float(18000) / rate)
+        audio = resample(audio, num_samples)
+        rate = 18000
     
     scale = float(max(audio))
     audio = audio / scale
