@@ -13,12 +13,15 @@ from package_name.utils import make_directory
 def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
     # Load the original audio file
     signal, sr = librosa.load(audioPath, sr=None)
+    print("Signal Loaded")
 
     # Load the noise file
     noise_signal, noise_sr = librosa.load(noisePath, sr=None)
+    print("Noise Loaded")
 
     # Resample the noise signal to match the sampling rate of the original signal
     noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
+    noise_sr = sr
 
     # Ensure the noise signal is at least as long as the original signal
     if len(noise_signal) < len(signal):
@@ -51,13 +54,13 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
         noisy_signal = signal + scaled_noise
 
         if sr <=16000:
-            num_samples = int(len(signal) * float(18000) / sr)
-            signal = resample(signal, num_samples)
-            noisy_signal = resample(noisy_signal, num_samples)
+            signal = librosa.resample(signal, orig_sr=sr, target_sr=18000)
+            noisy_signal = librosa.resample(noisy_signal, orig_sr=sr, target_sr=18000)
             sr = 18000
 
         # Calculate the STI of the noisy signal
         STI = stiFromAudio(signal, noisy_signal, sr)
+        print("STI: ", STI)
 
         if STI > sti_threshold:
             flag_fault = False
