@@ -6,6 +6,7 @@ import librosa
 import numpy as np
 from tqdm import tqdm
 import soundfile as sf
+from scipy.signal import resample
 from package_name.sti import stiFromAudio
 from package_name.utils import make_directory
 
@@ -49,9 +50,11 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
         # Add the noise to the signal
         noisy_signal = signal + scaled_noise
 
-        print("SR:", sr)
-
-        print("Test STI:", stiFromAudio(signal, signal, sr))
+        if sr <=16000:
+            num_samples = int(len(signal) * float(18000) / sr)
+            signal = resample(signal, num_samples)
+            noisy_signal = resample(noisy_signal, num_samples)
+            sr = 18000
 
         # Calculate the STI of the noisy signal
         STI = stiFromAudio(signal, noisy_signal, sr)
