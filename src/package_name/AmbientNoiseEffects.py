@@ -49,9 +49,9 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
         # Add the noise to the signal
         noisy_signal = signal + scaled_noise
 
-        print("Test STI:", stiFromAudio(signal, signal, sr))
-
         print("SR:", sr)
+
+        print("Test STI:", stiFromAudio(signal, signal, sr))
 
         # Calculate the STI of the noisy signal
         STI = stiFromAudio(signal, noisy_signal, sr)
