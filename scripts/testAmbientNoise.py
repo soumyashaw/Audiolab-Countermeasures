@@ -32,29 +32,30 @@ def make_directory(directory, ignore=False):
 
 
 def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
-    # Load the original audio file
-    signal, sr = librosa.load(audioPath, sr=None)
-
-    # Load the noise file
-    noise_signal, noise_sr = librosa.load(noisePath, sr=None)
-
-    # Resample the noise signal to match the sampling rate of the original signal
-    noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
-    noise_sr = sr
-
-    # Ensure the noise signal is at least as long as the original signal
-    if len(noise_signal) < len(signal):
-        # Repeat the noise signal to match the length of the original signal
-        repetitions = int(np.ceil(len(signal) / len(noise_signal)))
-        noise_signal = np.tile(noise_signal, repetitions)[:len(signal)]
-
-    else:
-        # Trim the noise signal to match the length of the original signal
-        noise_signal = noise_signal[:len(signal)]
 
     flag_fault = True
+    STI = 0.57
 
     while flag_fault:
+        # Load the original audio file
+        signal, sr = librosa.load(audioPath, sr=None)
+
+        # Load the noise file
+        noise_signal, noise_sr = librosa.load(noisePath, sr=None)
+
+        # Resample the noise signal to match the sampling rate of the original signal
+        noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
+        noise_sr = sr
+
+        # Ensure the noise signal is at least as long as the original signal
+        if len(noise_signal) < len(signal):
+            # Repeat the noise signal to match the length of the original signal
+            repetitions = int(np.ceil(len(signal) / len(noise_signal)))
+            noise_signal = np.tile(noise_signal, repetitions)[:len(signal)]
+
+        else:
+            # Trim the noise signal to match the length of the original signal
+            noise_signal = noise_signal[:len(signal)]
 
         # Calculate the power of the signal
         signal_power = np.sum(signal ** 2) / len(signal)
@@ -83,13 +84,14 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
         # Calculate the STI of the noisy signal
         """STI = stiFromAudio(signal, noisy_signal, sr)
         print("STI: ", STI)"""
-        STI = 0.8
+        #STI = 0.57
 
         if STI > sti_threshold:
             flag_fault = False
             break
         else:
             snr_dB += 5
+            STI = 0.62
             flag_fault = True
 
         print("Flag Fault: ", flag_fault)
