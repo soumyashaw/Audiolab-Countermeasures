@@ -128,7 +128,7 @@ def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, s
         noise_audio = ambient_noise_dir + str(noise)
 
         # Append the identifier string to output audio file
-        output_audio = f"{target_dir}amb{str(SNR)}dB_{str(audio)}"
+        output_audio = f"{target_dir}amb{str(SNR)}dB_{str("LA_T_9916745.wav")}"
 
         print("Audio: ", audio)
 
