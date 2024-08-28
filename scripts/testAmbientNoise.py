@@ -1,12 +1,35 @@
 import os
 import random
+import shutil
 import librosa
 import numpy as np
 from tqdm import tqdm
 import soundfile as sf
 from scipy.signal import resample
 #from package_name.sti import stiFromAudio
-from package_name.utils import make_directory
+
+def make_directory(directory, ignore=False):
+    if not os.path.exists(directory):
+        # Make a directory to store the augmented data
+        os.makedirs(directory, exist_ok=True)
+    else:
+        if ignore:
+            shutil.rmtree(directory)
+            os.makedirs(directory, exist_ok=True)
+        else:
+            print("Directory already exists. Confirm 'y' to overwrite the data.")
+            confirm = input("Do you want to overwrite the data? (y/n): ")
+            if confirm.lower() == "y":
+                shutil.rmtree(directory)
+                os.makedirs(directory, exist_ok=True)
+            elif confirm.lower() == "n":
+                print("Exiting the program.")
+                exit(0)
+            else:  
+                print("Invalid input. Exiting the program.")
+                exit(0)
+    return
+
 
 def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
     # Load the original audio file
