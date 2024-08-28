@@ -92,6 +92,8 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
             snr_dB += 5
             flag_fault = True
 
+        print("Flag Fault: ", flag_fault)
+
     return noisy_signal, sr
 
 def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, sti_threshold):
