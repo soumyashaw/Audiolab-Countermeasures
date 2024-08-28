@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 import soundfile as sf
 from scipy.signal import resample
-from package_name.sti import stiFromAudio
+#from package_name.sti import stiFromAudio
 from package_name.utils import make_directory
 
 def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
