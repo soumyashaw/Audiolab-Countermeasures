@@ -153,6 +153,7 @@ def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, s
 
         # Save the output with noise to a new file
         sf.write(output_audio, noisy_signal, sample_rate)
+        print("Output Audio Saved")
 
     print()
     print("\033[92mAmbient Noise added successfully!\033[0m")
