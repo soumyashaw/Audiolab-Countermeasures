@@ -60,15 +60,15 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
     print("Signal Shape 2: ", signal.shape)
     print("Resampled Noise Shape 2: ", noise_signal.shape)
 
-    # Calculate the power of the signal
-    signal_power = np.sum(signal ** 2) / len(signal)
-
-    # Calculate the power of the noise signal
-    noise_power = np.sum(noise_signal ** 2) / len(noise_signal)
-
     flag_fault = True
 
     while flag_fault:
+
+        # Calculate the power of the signal
+        signal_power = np.sum(signal ** 2) / len(signal)
+
+        # Calculate the power of the noise signal
+        noise_power = np.sum(noise_signal ** 2) / len(noise_signal)
 
         # Calculate the desired noise power based on the desired SNR
         snr_linear = 10 ** (snr_dB / 10.0)
@@ -76,6 +76,9 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
 
         # Scale the noise signal to achieve the desired noise power
         scaled_noise = noise_signal * np.sqrt(desired_noise_power / noise_power)
+
+        print("Signal Shape 3: ", signal.shape)
+        print("Scaled Noise Shape 3: ", scaled_noise.shape)
 
         # Add the noise to the signal
         noisy_signal = signal + scaled_noise
