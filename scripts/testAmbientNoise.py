@@ -117,6 +117,8 @@ def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, s
     target_dir = os.getcwd() + "/augmented_data/ambient_noise/"
 
     for audio in tqdm(audio_files, desc="Adding Ambient Noise to Audios"):
+        audio = "LA_T_9916745.wav"
+
         # Randomly choose the ambient noise file
         noise = random.choice(noise_files)
 
@@ -128,7 +130,7 @@ def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, s
         noise_audio = ambient_noise_dir + str(noise)
 
         # Append the identifier string to output audio file
-        output_audio = f"{target_dir}amb{str(SNR)}dB_{str("LA_T_9916745.wav")}"
+        output_audio = f"{target_dir}amb{str(SNR)}dB_{str(audio)}"
 
         print("Audio: ", audio)
 
