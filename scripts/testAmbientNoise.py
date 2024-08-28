@@ -42,6 +42,10 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
     print("Noise Loaded")
     print("Noise Shape: ", noise_signal.shape)
 
+    # Resample the noise signal to match the sampling rate of the original signal
+    noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
+    noise_sr = sr
+
     # Ensure the noise signal is at least as long as the original signal
     if len(noise_signal) < len(signal):
         # Repeat the noise signal to match the length of the original signal
@@ -52,9 +56,6 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
         # Trim the noise signal to match the length of the original signal
         noise_signal = noise_signal[:len(signal)]
 
-    # Resample the noise signal to match the sampling rate of the original signal
-    noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
-    noise_sr = sr
 
     print("Signal Shape 2: ", signal.shape)
     print("Resampled Noise Shape 2: ", noise_signal.shape)
