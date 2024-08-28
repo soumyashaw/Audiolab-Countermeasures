@@ -11,29 +11,29 @@ from package_name.sti import stiFromAudio
 from package_name.utils import make_directory
 
 def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
-    # Load the original audio file
-    signal, sr = librosa.load(audioPath, sr=None)
-
-    # Load the noise file
-    noise_signal, noise_sr = librosa.load(noisePath, sr=None)
-
-    # Resample the noise signal to match the sampling rate of the original signal
-    noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
-    noise_sr = sr
-
-    # Ensure the noise signal is at least as long as the original signal
-    if len(noise_signal) < len(signal):
-        # Repeat the noise signal to match the length of the original signal
-        repetitions = int(np.ceil(len(signal) / len(noise_signal)))
-        noise_signal = np.tile(noise_signal, repetitions)[:len(signal)]
-
-    else:
-        # Trim the noise signal to match the length of the original signal
-        noise_signal = noise_signal[:len(signal)]
-
+    
     flag_fault = True
 
     while flag_fault:
+        # Load the original audio file
+        signal, sr = librosa.load(audioPath, sr=None)
+
+        # Load the noise file
+        noise_signal, noise_sr = librosa.load(noisePath, sr=None)
+
+        # Resample the noise signal to match the sampling rate of the original signal
+        noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
+        noise_sr = sr
+
+        # Ensure the noise signal is at least as long as the original signal
+        if len(noise_signal) < len(signal):
+            # Repeat the noise signal to match the length of the original signal
+            repetitions = int(np.ceil(len(signal) / len(noise_signal)))
+            noise_signal = np.tile(noise_signal, repetitions)[:len(signal)]
+
+        else:
+            # Trim the noise signal to match the length of the original signal
+            noise_signal = noise_signal[:len(signal)]
 
         # Calculate the power of the signal
         signal_power = np.sum(signal ** 2) / len(signal)
