@@ -13,11 +13,9 @@ from package_name.utils import make_directory
 def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
     # Load the original audio file
     signal, sr = librosa.load(audioPath, sr=None)
-    print("Signal Loaded")
 
     # Load the noise file
     noise_signal, noise_sr = librosa.load(noisePath, sr=None)
-    print("Noise Loaded")
 
     # Resample the noise signal to match the sampling rate of the original signal
     noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
@@ -33,15 +31,15 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
         # Trim the noise signal to match the length of the original signal
         noise_signal = noise_signal[:len(signal)]
 
-    # Calculate the power of the signal
-    signal_power = np.sum(signal ** 2) / len(signal)
-
-    # Calculate the power of the noise signal
-    noise_power = np.sum(noise_signal ** 2) / len(noise_signal)
-
     flag_fault = True
 
     while flag_fault:
+
+        # Calculate the power of the signal
+        signal_power = np.sum(signal ** 2) / len(signal)
+
+        # Calculate the power of the noise signal
+        noise_power = np.sum(noise_signal ** 2) / len(noise_signal)
 
         # Calculate the desired noise power based on the desired SNR
         snr_linear = 10 ** (snr_dB / 10.0)
@@ -64,9 +62,11 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
 
         if STI > sti_threshold:
             flag_fault = False
+            break
         else:
             snr_dB += 5
             flag_fault = True
+            print("STI is less than the threshold. Increasing SNR by 5 dB.")
 
     return noisy_signal, sr
 
