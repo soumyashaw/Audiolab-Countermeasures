@@ -34,13 +34,9 @@ def make_directory(directory, ignore=False):
 def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
     # Load the original audio file
     signal, sr = librosa.load(audioPath, sr=None)
-    print("Signal Loaded")
-    print("Signal Shape: ", signal.shape)
 
     # Load the noise file
     noise_signal, noise_sr = librosa.load(noisePath, sr=None)
-    print("Noise Loaded")
-    print("Noise Shape: ", noise_signal.shape)
 
     # Resample the noise signal to match the sampling rate of the original signal
     noise_signal = librosa.resample(noise_signal, orig_sr=noise_sr, target_sr=sr)
@@ -55,10 +51,6 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
     else:
         # Trim the noise signal to match the length of the original signal
         noise_signal = noise_signal[:len(signal)]
-
-
-    print("Signal Shape 2: ", signal.shape)
-    print("Resampled Noise Shape 2: ", noise_signal.shape)
 
     flag_fault = True
 
@@ -77,8 +69,8 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
         # Scale the noise signal to achieve the desired noise power
         scaled_noise = noise_signal * np.sqrt(desired_noise_power / noise_power)
 
-        print("Signal Shape 3: ", signal.shape)
-        print("Scaled Noise Shape 3: ", scaled_noise.shape)
+        print("Signal Shape: ", signal.shape)
+        print("Scaled Noise Shape: ", scaled_noise.shape)
 
         # Add the noise to the signal
         noisy_signal = signal + scaled_noise
