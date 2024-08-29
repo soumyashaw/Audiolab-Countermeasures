@@ -107,13 +107,13 @@ def add_ambient_noise_effects(SNR_levels_dB, reference_dir, ambient_noise_dir, s
         # Append the identifier string to output audio file
         output_audio = f"{target_dir}amb{str(SNR)}dB_{str(audio)}"
 
-        # Append the output audio file to the list for text file creation
-        output_files.append("amb" + str(SNR) + "dB_" + str(audio))
-
         try:
 
             # Call the function to add white noise to the audio file
             noisy_signal, sample_rate = add_ambient_noise(input_audio, noise_audio, SNR, sti_threshold)
+
+            # Append the output audio file to the list for text file creation
+            output_files.append("amb" + str(SNR) + "dB_" + str(audio))
 
         except Exception as e:
             print("\033[91mError: ", e, "\033[0m")
