@@ -8,6 +8,8 @@ from tqdm import tqdm
 import soundfile as sf
 from package_name.utils import divide_list_randomly, make_directory, calculate_avg_sti
 
+from package_name.sti import stiFromAudio, readwav
+
 import random
 from scipy.signal import resample
 from package_name.sti import stiFromAudio
@@ -132,32 +134,29 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
     for audio in tqdm(audio_files, desc="Adding VoIP Perterbation Effects"):
         input_audio = reference_dir + str(audio)
-        output_audio = target_dir + "voip_" + str(audio)
+        input_audio_signal, refRate  = readwav(input_audio)
+        output_audio = target_dir + "reve_" + str(audio)
 
-        # Append the output audio file to the list for text file creation
-        output_files.append("voip_" + str(audio))
-
-        # Add Reverberation Effects
+        # Start Reverberation Effects
         print("Adding Reverberation Effects")
         reverb_selectable = random.choice([0, 1])
         add_reverberation(input_audio, output_audio, selectable=reverb_selectable)
+        # End Reverberation Effects
 
-        #input_audio_signal, sr = librosa.load(input_audio, sr=None)
-
-        # Add Gaussian Noise Effects
-        """print("Adding Gaussian Noise Effects")
+        # Start Gaussian Noise Effects
+        print("Adding Gaussian Noise Effects")
         desired_snr_dB = random.choice(gaussian_SNR_levels)
 
         while flag_fault_0:
             print("SNR: ", desired_snr_dB)
-            gaussian_noise_signal, sample_rate = add_white_noise(input_audio, desired_snr_dB)
+            gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve" + str(audio), desired_snr_dB)
             sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
             if sti < sti_threshold:
                 print("STI is below the threshold. Trying another SNR level.")
                 desired_snr_dB = gaussian_SNR_levels[gaussian_SNR_levels.index(desired_snr_dB) - 1]
                 flag_fault_0 = True
             else:
-                flag_fault_0 = False"""
+                flag_fault_0 = False
 
 
         # Add Ambient Noise Effects
@@ -174,7 +173,8 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         
 
 
-
+        # Append the output audio file to the list for text file creation
+        output_files.append("voip_" + str(audio))
 
         # Save the output audio file
         #sf.write(output_audio, gaussian_noise_signal, sr)
