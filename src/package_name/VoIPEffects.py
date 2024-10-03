@@ -119,7 +119,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
     print(" "*50 + "\033[91mAdding VoIP Perterbation Effects\033[0m")
     print()
 
-    ## flag_fault_0 = True
+    flag_fault_0 = True
     gaussian_SNR_levels.sort(reverse=True)
 
     audio_files = os.listdir(reference_dir)
