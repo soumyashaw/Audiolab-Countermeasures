@@ -133,7 +133,7 @@ def main():
             elif augment_data_selected_option_index == 6:
                 continue
 
-        elif selected_option_index == 2:
+        elif selected_option_index == 3:
             print("Terminating Execution. Goodbye!")
             break
 
