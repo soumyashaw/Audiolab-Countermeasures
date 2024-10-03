@@ -4,8 +4,8 @@
 import os
 import argparse
 from tqdm import tqdm
-from package_name.sti import stiFromAudio, readwav
 from simple_term_menu import TerminalMenu
+from package_name.sti import stiFromAudio, readwav
 
 from package_name.CodecEffects import add_codec_artifacts
 from package_name.PacketLossEffects import add_packet_loss_effects
@@ -19,7 +19,8 @@ def main():
     # Define the menu options
     menu_options = [
         "Calculate Average STI",
-        "Augment Data for Training",
+        "Utility Based Data Augmentation",
+        "Specific Perturbation Based Data Augmentation",
         "Exit",
     ]
 
@@ -59,8 +60,31 @@ def main():
                 
             print("\033[91mAverage STI\033[0m: ", sti_total/len(reference_files))
             
-
         elif selected_option_index == 1:
+            utility_data_augmentation_menu_options = [
+                "Telephony Perturbation Effects",
+                "VoIP Perturbation Effects",
+                "Video Conferencing Perturbation Effects",
+                "Go Back"
+            ]
+
+            utility_data_augmentation_menu = TerminalMenu(utility_data_augmentation_menu_options, title="Utility Based Data Augmentation Menu", clear_screen=True)
+            utility_data_augmentation_selected_option_index = utility_data_augmentation_menu.show()
+
+            if utility_data_augmentation_selected_option_index == 0:
+                add_telephony_perterbations_effects()
+
+            if utility_data_augmentation_selected_option_index == 1:
+                pass
+
+            if utility_data_augmentation_selected_option_index == 2:
+                pass
+
+            if utility_data_augmentation_selected_option_index == 3:
+                continue
+
+
+        elif selected_option_index == 2:
 
             augment_data_menu_options = [
                 "Add Gaussian Noise",
