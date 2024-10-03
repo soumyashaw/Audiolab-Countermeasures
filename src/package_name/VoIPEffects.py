@@ -167,28 +167,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
 
 
-
-
-
-
-        reference_audio, sr = librosa.load(input_audio, sr=None)
-
-        loss_rate = packet_loss_rate
-        packet_loss_audio = simulate_packet_loss(reference_audio, loss_rate)
-
-        sf.write(output_audio, packet_loss_audio, sr)
-
-    avg_sti = calculate_avg_sti(audio_files, target_dir, reference_dir, prefix = "pl_")
-
-    # Print the average STI for the packet drop rate
-    print(f"Average STI for {loss_rate} packet drop rate: {avg_sti}")
-
-    if avg_sti < sti_threshold:
-        print("\033[91mAverage STI is below the threshold.\033[0m Deleting augmented data.")
-
-        # Remove the directory made
-        shutil.rmtree(target_dir)
-
     print()
     print("\033[92mPacket Loss Effect added successfully!\033[0m")
 
@@ -197,6 +175,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         os.chdir(reference_dir)
         os.chdir("../")
 
-        with open('augmented_data/packet_loss.txt', 'w') as file:
+        with open('augmented_data/voip_perterbations.txt', 'w') as file:
             for item in output_files:
                 file.write(f"{item}\n")
