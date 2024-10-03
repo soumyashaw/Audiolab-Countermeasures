@@ -202,6 +202,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
                     flag_fault = True
                 else:
                     flag_fault = False
+            sf.write(target_dir + "bgno_" + str(audio), ambient_noise_signal, sample_rate)
             # End Gaussian Noise Effects
 
         else:
@@ -213,6 +214,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             noise = random.choice(noise_files)
             noise_audio = ambient_noise_dir + str(noise)
             ambient_noise_signal, sample_rate = add_ambient_noise(target_dir + "reve_" + str(audio), noise_audio, desired_snr_dB, sti_threshold)
+            sf.write(target_dir + "bgno_" + str(audio), ambient_noise_signal, sample_rate)
             # End Ambient Noise Effects
 
         # Start Volume Reduction Effects
@@ -220,9 +222,15 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # End Volume Reduction Effects
 
         # Start Codec Artifacts Effects
-        codec_added_audio = add_codec_loss(input_audio, "wav", "g722")
-
+        codec_added_audio = add_codec_loss(target_dir + "bgno_" + str(audio), "wav", "g722")
+        sf.write(target_dir + "code_" + str(audio), codec_added_audio, 16000)
         # End Codec Artifacts Effects
+
+        # Start Downsampling Effects
+        # End Downsampling Effects
+
+        # Start Packet Loss Effects
+        # End Packet Loss Effects
 
 
         
