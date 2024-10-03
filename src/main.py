@@ -75,10 +75,10 @@ def main():
                 add_telephony_perterbations_effects()
 
             if utility_data_augmentation_selected_option_index == 1:
-                pass
+                add_voip_perterbations_effects()
 
             if utility_data_augmentation_selected_option_index == 2:
-                pass
+                add_video_conferencing_perterbations_effects()
 
             if utility_data_augmentation_selected_option_index == 3:
                 continue
