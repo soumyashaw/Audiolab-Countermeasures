@@ -202,7 +202,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
                     flag_fault = True
                 else:
                     flag_fault = False
-            sf.write(target_dir + "bgno_" + str(audio), ambient_noise_signal, sample_rate)
+            sf.write(target_dir + "bgno_" + str(audio), gaussian_noise_signal, sample_rate)
             # End Gaussian Noise Effects
 
         else:
