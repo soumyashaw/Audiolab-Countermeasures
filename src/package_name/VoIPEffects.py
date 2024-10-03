@@ -243,7 +243,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         output_audio = target_dir + "voip_" + str(audio)
 
         # Save the output audio file
-        sf.write(output_audio, ambient_noise_signal, sample_rate)
+        #sf.write(output_audio, ambient_noise_signal, sample_rate)
     
 
 
