@@ -154,7 +154,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
             if sti < sti_threshold:
                 print("STI is below the threshold. Trying another SNR level.")
-                desired_snr_dB = gaussian_SNR_levels[gaussian_SNR_levels.index(desired_snr_dB) - 1]
+                desired_snr_dB += 1
                 flag_fault_0 = True
             else:
                 flag_fault_0 = False
