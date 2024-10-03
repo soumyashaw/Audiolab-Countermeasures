@@ -134,7 +134,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
     for audio in tqdm(audio_files, desc="Adding VoIP Perterbation Effects"):
         input_audio = reference_dir + str(audio)
-        input_audio_signal, refRate  = readwav(input_audio)
+        input_audio_signal, sr  = readwav(input_audio)
         output_audio = target_dir + "reve_" + str(audio)
 
         # Start Reverberation Effects
@@ -177,7 +177,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         output_files.append("voip_" + str(audio))
 
         # Save the output audio file
-        #sf.write(output_audio, gaussian_noise_signal, sr)
+        sf.write(output_audio, gaussian_noise_signal, sample_rate)
     
 
 
