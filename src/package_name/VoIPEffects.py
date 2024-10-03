@@ -119,7 +119,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
     print(" "*50 + "\033[91mAdding VoIP Perterbation Effects\033[0m")
     print()
 
-    flag_fault_0 = True
+    ## flag_fault_0 = True
     gaussian_SNR_levels.sort(reverse=True)
 
     audio_files = os.listdir(reference_dir)
@@ -148,6 +148,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         desired_snr_dB = random.choice(gaussian_SNR_levels)
 
         while flag_fault_0:
+            flag_fault_0 = True
             print("SNR: ", desired_snr_dB)
             gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
             sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
