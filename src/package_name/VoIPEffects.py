@@ -132,7 +132,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
     for audio in tqdm(audio_files, desc="Adding VoIP Perterbation Effects"):
         input_audio = reference_dir + str(audio)
-        input_audio_signal, sr = librosa.load(input_audio, sr=None)
         output_audio = target_dir + "voip_" + str(audio)
 
         # Append the output audio file to the list for text file creation
@@ -143,9 +142,10 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         reverb_selectable = random.choice([0, 1])
         add_reverberation(input_audio, output_audio, selectable=reverb_selectable)
 
+        #input_audio_signal, sr = librosa.load(input_audio, sr=None)
 
         # Add Gaussian Noise Effects
-        print("Adding Gaussian Noise Effects")
+        """print("Adding Gaussian Noise Effects")
         desired_snr_dB = random.choice(gaussian_SNR_levels)
 
         while flag_fault_0:
@@ -157,7 +157,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
                 desired_snr_dB = gaussian_SNR_levels[gaussian_SNR_levels.index(desired_snr_dB) - 1]
                 flag_fault_0 = True
             else:
-                flag_fault_0 = False
+                flag_fault_0 = False"""
 
 
         # Add Ambient Noise Effects
@@ -177,7 +177,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
 
         # Save the output audio file
-        sf.write(output_audio, gaussian_noise_signal, sr)
+        #sf.write(output_audio, gaussian_noise_signal, sr)
     
 
 
