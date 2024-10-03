@@ -7,6 +7,10 @@ from tqdm import tqdm
 from simple_term_menu import TerminalMenu
 from package_name.sti import stiFromAudio, readwav
 
+from package_name.VoIPEffects import add_voip_perterbation_effects
+from package_name.TelephonyEffects import add_telephony_perterbation_effects
+from package_name.VideoConferenceEffects import add_video_conferencing_perterbation_effects
+
 from package_name.CodecEffects import add_codec_artifacts
 from package_name.PacketLossEffects import add_packet_loss_effects
 from package_name.DownsamplingEffects import add_downsampling_effects
@@ -72,13 +76,15 @@ def main():
             utility_data_augmentation_selected_option_index = utility_data_augmentation_menu.show()
 
             if utility_data_augmentation_selected_option_index == 0:
-                add_telephony_perterbations_effects()
+                add_telephony_perterbation_effects()
 
             if utility_data_augmentation_selected_option_index == 1:
-                add_voip_perterbations_effects()
+                gaussian_SNR_levels = [5, 6, 7, 8, 9, 10]
+                ambient_SNR_levels = [5, 10, 15, 20, 25, 30]
+                add_voip_perterbation_effects(gaussian_SNR_levels, ambient_SNR_levels, args.ambient_noise_dir, args.reference_dir, args.sti_threshold)
 
             if utility_data_augmentation_selected_option_index == 2:
-                add_video_conferencing_perterbations_effects()
+                add_video_conferencing_perterbation_effects()
 
             if utility_data_augmentation_selected_option_index == 3:
                 continue
