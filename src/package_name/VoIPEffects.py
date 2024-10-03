@@ -14,6 +14,11 @@ import random
 from scipy.signal import resample
 from package_name.sti import stiFromAudio
 
+import torchaudio
+from tqdm import tqdm
+import soundfile as sf
+from pydub import AudioSegment
+
 def calculate_STI(target_audio, reference_audio, refRate):
     try:
         STI = stiFromAudio(reference_audio, target_audio, refRate)
@@ -111,6 +116,42 @@ def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_p
 
     return
 
+def add_codec_loss(audioPath, format, codec: str):
+    if codec == 'mulaw' or codec == 'alaw' or codec == 'g722':
+        # Load the audio file
+        waveform, sr = torchaudio.load(audioPath, channels_first=False)
+
+        # Assign Encoder based on the codec
+        if codec == 'mulaw':
+            encoder = "pcm_mulaw"
+        elif codec == 'alaw':
+            encoder = "pcm_alaw"
+        elif codec == 'g722':
+            encoder = "g722"
+
+        # Apply the codec to the audio file
+        encoder = torchaudio.io.AudioEffector(format=format, encoder=encoder)
+
+        # Return the audio file with the codec applied
+        return encoder.apply(waveform, sr)
+    
+    elif codec == 'opus':
+        # Load the audio file
+        audio = AudioSegment.from_file(audioPath)
+
+        # Export as Opus format
+        audio.export('encoded.opus', format="opus")
+
+        # Load the encoded audio file
+        audio = AudioSegment.from_file('encoded.opus')
+
+        try:
+            os.remove('encoded.opus')
+        except:
+            pass
+
+        return audio
+
 
 
 def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, reference_dir: str, sti_threshold: float):
@@ -164,7 +205,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             # End Gaussian Noise Effects
 
         else:
-            # Add Ambient Noise Effects
+            # Start Ambient Noise Effects
             print("Adding Ambient Noise Effects")
             noise_files = os.listdir(ambient_noise_dir)
             desired_snr_dB = random.choice(ambient_SNR_levels)
@@ -172,7 +213,16 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             noise = random.choice(noise_files)
             noise_audio = ambient_noise_dir + str(noise)
             ambient_noise_signal, sample_rate = add_ambient_noise(target_dir + "reve_" + str(audio), noise_audio, desired_snr_dB, sti_threshold)
+            # End Ambient Noise Effects
 
+        # Start Volume Reduction Effects
+
+        # End Volume Reduction Effects
+
+        # Start Codec Artifacts Effects
+        codec_added_audio = add_codec_loss(input_audio, "wav", "g722")
+
+        # End Codec Artifacts Effects
 
 
         
