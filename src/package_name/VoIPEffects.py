@@ -115,11 +115,11 @@ def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_p
 
 def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, reference_dir: str, sti_threshold: float):
     output_files = []
+    flag_fault = True
 
     print(" "*50 + "\033[91mAdding VoIP Perterbation Effects\033[0m")
     print()
 
-    flag_fault_0 = True
     gaussian_SNR_levels.sort(reverse=True)
 
     audio_files = os.listdir(reference_dir)
@@ -133,7 +133,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
     make_directory(target_dir)
 
     for audio in tqdm(audio_files, desc="Adding VoIP Perterbation Effects"):
-        flag_fault_0 = True
+        flag_fault = True
         input_audio = reference_dir + str(audio)
         input_audio_signal, sr  = readwav(input_audio)
         output_audio = target_dir + "reve_" + str(audio)
@@ -145,32 +145,47 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # End Reverberation Effects
 
         # Start Gaussian Noise Effects
-        print("Adding Gaussian Noise Effects")
+        """print("Adding Gaussian Noise Effects")
         desired_snr_dB = random.choice(gaussian_SNR_levels)
 
-        while flag_fault_0:
+        while flag_fault:
             print("SNR: ", desired_snr_dB)
             gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
             sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
             if sti < sti_threshold:
                 print("STI is below the threshold. Trying another SNR level.")
                 desired_snr_dB += 1
-                flag_fault_0 = True
+                flag_fault = True
             else:
-                flag_fault_0 = False
+                flag_fault = False"""
+        # End Gaussian Noise Effects
 
 
         # Add Ambient Noise Effects
-        """print("Adding Ambient Noise Effects")
+        print("Adding Ambient Noise Effects")
         noise_files = os.listdir(ambient_noise_dir)
         desired_snr_dB = random.choice(ambient_SNR_levels)
+        print("SNR: ", desired_snr_dB)
         noise = random.choice(noise_files)
         noise_audio = ambient_noise_dir + str(noise)
-        flag_fault_0 = True
 
-        print("SNR: ", desired_snr_dB)
-        ambient_noise_signal, sample_rate = add_ambient_noise(input_audio, noise_audio, desired_snr_dB, sti_threshold)"""
+        while flag_fault:
+            
+            ambient_noise_signal, sample_rate = add_ambient_noise(target_dir + "reve_" + str(audio), noise_audio, desired_snr_dB, sti_threshold)
+            sti = calculate_STI(ambient_noise_signal, input_audio_signal, sample_rate)
+            if sti < sti_threshold:
+                print("STI is below the threshold. Trying another SNR level.")
+                desired_snr_dB += 1
+                flag_fault = True
+            else:
+                flag_fault = False
 
+
+        
+        
+        flag_fault = True
+
+        
         
 
 
