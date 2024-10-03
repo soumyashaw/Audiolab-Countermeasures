@@ -79,7 +79,7 @@ def main():
                 add_telephony_perterbation_effects()
 
             if utility_data_augmentation_selected_option_index == 1:
-                gaussian_SNR_levels = [5, 6, 7, 8, 9, 10]
+                gaussian_SNR_levels = [5, 7, 9, 11, 13, 15]
                 ambient_SNR_levels = [5, 10, 15, 20, 25, 30]
                 add_voip_perterbation_effects(gaussian_SNR_levels, ambient_SNR_levels, args.ambient_noise_dir, args.reference_dir, args.sti_threshold)
 
