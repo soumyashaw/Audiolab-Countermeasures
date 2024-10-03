@@ -133,6 +133,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
     make_directory(target_dir)
 
     for audio in tqdm(audio_files, desc="Adding VoIP Perterbation Effects"):
+        flag_fault_0 = True
         input_audio = reference_dir + str(audio)
         input_audio_signal, sr  = readwav(input_audio)
         output_audio = target_dir + "reve_" + str(audio)
@@ -148,7 +149,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         desired_snr_dB = random.choice(gaussian_SNR_levels)
 
         while flag_fault_0:
-            flag_fault_0 = True
             print("SNR: ", desired_snr_dB)
             gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
             sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
