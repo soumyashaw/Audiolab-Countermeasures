@@ -144,41 +144,34 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         add_reverberation(input_audio, output_audio, selectable=reverb_selectable)
         # End Reverberation Effects
 
-        # Start Gaussian Noise Effects
-        """print("Adding Gaussian Noise Effects")
-        desired_snr_dB = random.choice(gaussian_SNR_levels)
+        bg_noise_selection = random.choice([0, 1])
 
-        while flag_fault:
+        if bg_noise_selection == 0:
+            # Start Gaussian Noise Effects
+            print("Adding Gaussian Noise Effects")
+            desired_snr_dB = random.choice(gaussian_SNR_levels)
+
+            while flag_fault:
+                print("SNR: ", desired_snr_dB)
+                gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
+                sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
+                if sti < sti_threshold:
+                    print("STI is below the threshold. Trying another SNR level.")
+                    desired_snr_dB += 1
+                    flag_fault = True
+                else:
+                    flag_fault = False
+            # End Gaussian Noise Effects
+
+        else:
+            # Add Ambient Noise Effects
+            print("Adding Ambient Noise Effects")
+            noise_files = os.listdir(ambient_noise_dir)
+            desired_snr_dB = random.choice(ambient_SNR_levels)
             print("SNR: ", desired_snr_dB)
-            gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
-            sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
-            if sti < sti_threshold:
-                print("STI is below the threshold. Trying another SNR level.")
-                desired_snr_dB += 1
-                flag_fault = True
-            else:
-                flag_fault = False"""
-        # End Gaussian Noise Effects
-
-
-        # Add Ambient Noise Effects
-        print("Adding Ambient Noise Effects")
-        noise_files = os.listdir(ambient_noise_dir)
-        desired_snr_dB = random.choice(ambient_SNR_levels)
-        print("SNR: ", desired_snr_dB)
-        noise = random.choice(noise_files)
-        noise_audio = ambient_noise_dir + str(noise)
-
-        while flag_fault:
-            
+            noise = random.choice(noise_files)
+            noise_audio = ambient_noise_dir + str(noise)
             ambient_noise_signal, sample_rate = add_ambient_noise(target_dir + "reve_" + str(audio), noise_audio, desired_snr_dB, sti_threshold)
-            sti = calculate_STI(ambient_noise_signal, input_audio_signal, sample_rate)
-            if sti < sti_threshold:
-                print("STI is below the threshold. Trying another SNR level.")
-                desired_snr_dB += 1
-                flag_fault = True
-            else:
-                flag_fault = False
 
 
 
