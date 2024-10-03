@@ -99,6 +99,16 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
 
     return noisy_signal, sr
 
+def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_path: str = "/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/iir.wav"):
+    if selectable == 0:
+        cmd1 = f"ffmpeg -loglevel error -i {audioPath} -map 0 -c:v copy -af aecho=1.0:0.9:70:0.5 {targetpath}"
+        os.system(cmd1)
+    elif selectable == 1:
+        cmd2 = f"ffmpeg -loglevel error -i {audioPath} -i {iir_path} -filter_complex '[0] [1] afir=dry=10:wet=10 [reverb]; [0] [reverb] amix=inputs=2:weights=10 4' {targetpath}"
+        os.system(cmd2)
+
+    return
+
 
 
 def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, reference_dir: str, sti_threshold: float):
@@ -128,6 +138,11 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # Append the output audio file to the list for text file creation
         output_files.append("voip_" + str(audio))
 
+        # Add Reverberation Effects
+        print("Adding Reverberation Effects")
+        reverb_selectable = random.choice([0, 1])
+        add_reverberation(input_audio, output_audio, selectable=reverb_selectable)
+
 
         # Add Gaussian Noise Effects
         print("Adding Gaussian Noise Effects")
@@ -155,6 +170,9 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
         print("SNR: ", desired_snr_dB)
         ambient_noise_signal, sample_rate = add_ambient_noise(input_audio, noise_audio, desired_snr_dB, sti_threshold)"""
+
+        
+
 
 
 
