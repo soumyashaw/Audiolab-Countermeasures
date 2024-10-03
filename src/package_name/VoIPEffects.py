@@ -151,10 +151,24 @@ def add_codec_loss(audioPath, format, codec: str):
             pass
 
         return audio
+    
+def downsample_audio(audioPath, sampling_freq, original_sampling_freq = 44100):
+    # Load the audio file
+    audio, sr = librosa.load(audioPath, sr=None)
+
+    # Downsample the audio file
+    number_of_samples = round(len(audio) * float(sampling_freq) / original_sampling_freq)
+    downsampled_audio = resample(audio, number_of_samples)
+
+    # Upsample the audio file to the original sampling frequency
+    number_of_samples = round(len(downsampled_audio) * float(original_sampling_freq) / sampling_freq)
+    audio = resample(downsampled_audio, number_of_samples)
+
+    return audio, original_sampling_freq
 
 
 
-def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, reference_dir: str, sti_threshold: float):
+def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, lower_sampling_rate: int, current_sampling_rate: int, reference_dir: str, sti_threshold: float):
     output_files = []
     flag_fault = True
 
@@ -222,11 +236,30 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # End Volume Reduction Effects
 
         # Start Codec Artifacts Effects
+        print("Adding Codec Artifacts Effects")
         codec_added_audio = add_codec_loss(target_dir + "bgno_" + str(audio), "wav", "g722")
         sf.write(target_dir + "code_" + str(audio), codec_added_audio, 16000)
         # End Codec Artifacts Effects
 
         # Start Downsampling Effects
+        print("Adding Downsampling Effects")
+        sampling_freqs = list(np.arange(lower_sampling_rate, current_sampling_rate, 5000))
+        sampling_freqs.sort(reverse=True)
+        freq = random.choice(sampling_freqs)
+        
+        flag_fault = True
+        while flag_fault:
+            print("Sampling Frequency: ", freq)
+            downsampled_audio, sample_rate = downsample_audio(target_dir + "code_" + str(audio), freq, current_sampling_rate)
+            sti = calculate_STI(downsampled_audio, input_audio_signal, sample_rate)
+            if sti < sti_threshold:
+                print("STI is below the threshold. Trying another SNR level.")
+                freq = sampling_freqs[sampling_freqs.index(freq) - 1]
+                flag_fault = True
+            else:
+                flag_fault = False
+
+        sf.write(target_dir + "down_" + str(audio), downsampled_audio, sr)
         # End Downsampling Effects
 
         # Start Packet Loss Effects
