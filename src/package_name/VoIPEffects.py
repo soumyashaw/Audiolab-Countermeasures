@@ -184,7 +184,7 @@ def find_volume(audio):
 
 
 
-def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, volume_threshold: float, lower_sampling_rate: int, current_sampling_rate: int, packet_loss_rate: float, reference_dir: str, sti_threshold: float):
+def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, volume_threshold: float, lower_sampling_rate: int, current_sampling_rate: int, packet_loss_rates: list, reference_dir: str, sti_threshold: float):
     output_files = []
     flag_fault = True
 
@@ -353,7 +353,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
         # ----- Start Packet Loss Effects ----- 
         #print("Adding Packet Loss Effects")
-        loss_rate = packet_loss_rate
+        loss_rate = random.choice(packet_loss_rates)
         packet_loss_audio, sample_rate = simulate_packet_loss(target_dir + "down_" + str(audio), loss_rate)
         # ----- End Packet Loss Effects ----- 
 
