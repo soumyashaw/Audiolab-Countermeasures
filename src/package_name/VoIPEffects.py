@@ -166,9 +166,19 @@ def downsample_audio(audioPath, sampling_freq, original_sampling_freq = 44100):
 
     return audio, original_sampling_freq
 
+def simulate_packet_loss(input_audio, loss_rate):
+    audio_data, sr = librosa.load(input_audio, sr=None)
+
+    num_samples = len(audio_data)
+    lost_samples = int(loss_rate * num_samples)
+    indices_to_drop = np.random.choice(num_samples, lost_samples, replace=False)
+
+    simulated_data = np.delete(audio_data, indices_to_drop)
+    return simulated_data
 
 
-def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, lower_sampling_rate: int, current_sampling_rate: int, reference_dir: str, sti_threshold: float):
+
+def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, lower_sampling_rate: int, current_sampling_rate: int, packet_loss_rate: float, reference_dir: str, sti_threshold: float):
     output_files = []
     flag_fault = True
 
@@ -263,6 +273,8 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # End Downsampling Effects
 
         # Start Packet Loss Effects
+        loss_rate = packet_loss_rate
+        packet_loss_audio = simulate_packet_loss(target_dir + "down_" + str(audio), loss_rate)
         # End Packet Loss Effects
 
 
@@ -276,7 +288,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         output_audio = target_dir + "voip_" + str(audio)
 
         # Save the output audio file
-        #sf.write(output_audio, ambient_noise_signal, sample_rate)
+        sf.write(output_audio, packet_loss_audio, sample_rate)
     
 
 
