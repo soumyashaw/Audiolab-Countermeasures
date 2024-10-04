@@ -17,9 +17,9 @@ from package_name.sti import stiFromAudio, readwav
 def calculate_STI(reference_audio, target_audio, ref_rate):
 
     if ref_rate <=16000:
-        reference_audio = librosa.resample(reference_audio, orig_sr=sr, target_sr=18000)
-        target_audio = librosa.resample(target_audio, orig_sr=sr, target_sr=18000)
-        sr = 18000
+        reference_audio = librosa.resample(reference_audio, orig_sr=ref_rate, target_sr=18000)
+        target_audio = librosa.resample(target_audio, orig_sr=ref_rate, target_sr=18000)
+        ref_rate = 18000
 
     try:
         print("Calculating STI", ref_rate)
