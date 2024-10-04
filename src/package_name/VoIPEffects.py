@@ -1,28 +1,29 @@
 #!/usr/bin/python
 
 import os
+import random
 import shutil
 import librosa
+import torchaudio
 import numpy as np
 from tqdm import tqdm
 import soundfile as sf
-from package_name.utils import divide_list_randomly, make_directory, calculate_avg_sti
-
+from pydub import AudioSegment
+from scipy.signal import resample
+from package_name.utils import make_directory
 from package_name.sti import stiFromAudio, readwav
 
-import random
-from scipy.signal import resample
-from package_name.sti import stiFromAudio
 
-import torchaudio
-from tqdm import tqdm
-import soundfile as sf
-from pydub import AudioSegment
+def calculate_STI(reference_audio, target_audio, ref_rate):
 
-def calculate_STI(reference_audio, target_audio, refRate):
+    if ref_rate <=16000:
+        reference_audio = librosa.resample(reference_audio, orig_sr=sr, target_sr=18000)
+        target_audio = librosa.resample(target_audio, orig_sr=sr, target_sr=18000)
+        sr = 18000
+
     try:
-        print("Calculating STI", refRate)
-        STI = stiFromAudio(reference_audio, target_audio, refRate)
+        print("Calculating STI", ref_rate)
+        STI = stiFromAudio(reference_audio, target_audio, ref_rate)
         print("STI: ", STI)
         return STI
 
@@ -214,12 +215,9 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             dB_reduced += 1
 
     vol_dBs = [float(i) for i in range(1, dB_reduced)]
-    print(vol_dBs)
 
     os.chdir(reference_dir)
     os.chdir("../")
-
-    print(os.getcwd())
 
     target_dir = os.getcwd() + "/augmented_data/VoIP_perterbations/"
     make_directory(target_dir)
@@ -260,7 +258,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             desired_snr_dB = random.choice(gaussian_SNR_levels)
 
             while flag_fault:
-                print("SNR: ", desired_snr_dB)
 
                 # Add the Gaussian noise to the audio file
                 gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
@@ -270,7 +267,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
                 # Check if the STI is below the threshold
                 if sti < sti_threshold:
-                    print("STI is below the threshold. Trying another SNR level.")
                     desired_snr_dB += 1
                     flag_fault = True
                 else:
@@ -289,7 +285,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
             # Randomly select the SNR level for the ambient noise
             desired_snr_dB = random.choice(ambient_SNR_levels)
-            print("SNR: ", desired_snr_dB)
 
             # Randomly choose the ambient noise file
             noise = random.choice(noise_files)
@@ -346,13 +341,10 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         
         flag_fault = True
         while flag_fault:
-            print("Sampling Frequency: ", freq)
-
             # Downsample the audio file
             downsampled_audio, sample_rate = downsample_audio(target_dir + "code_" + str(audio), freq, current_sampling_rate)
             sti = calculate_STI(input_audio_signal, downsampled_audio, sample_rate)
             if sti < sti_threshold:
-                print("STI is below the threshold. Trying another SNR level.")
                 freq = sampling_freqs[sampling_freqs.index(freq) - 1]
                 flag_fault = True
             else:
@@ -377,13 +369,8 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         sf.write(output_audio, packet_loss_audio, sample_rate)
     
 
-
-
-
-
-
     print()
-    print("\033[92mPacket Loss Effect added successfully!\033[0m")
+    print("\033[92mEffects added successfully!\033[0m")
 
     # Create a text file to store the output audio files
     if len(output_files) > 0:
