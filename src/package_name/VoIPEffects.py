@@ -343,7 +343,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             downsampled_audio, sample_rate = downsample_audio(target_dir + "code_" + str(audio), freq, current_sampling_rate)
             sti = calculate_STI(input_audio_signal, downsampled_audio, sample_rate)
             if sti < sti_threshold:
-                freq += 1000
+                freq += 5000
                 flag_fault = True
             else:
                 flag_fault = False
