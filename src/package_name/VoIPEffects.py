@@ -251,6 +251,8 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             # ----- Start Gaussian Noise Effects ----- 
             print("Adding Gaussian Noise Effects")
 
+            gaussian_counter = 0
+
             # Sort the SNR levels in descending order
             gaussian_SNR_levels.sort(reverse=True)
 
@@ -268,9 +270,13 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
                 # Check if the STI is below the threshold
                 if sti < sti_threshold:
                     desired_snr_dB += 2
+                    gaussian_counter += 1
                     flag_fault = True
                 else:
                     flag_fault = False
+
+                if gaussian_counter > 10:
+                    break
 
             # Save the audio file with the Gaussian noise effect
             sf.write(target_dir + "bgno_" + str(audio), gaussian_noise_signal, sample_rate)
