@@ -133,7 +133,7 @@ def add_codec_loss(audioPath, format, codec: str):
         encoder = torchaudio.io.AudioEffector(format=format, encoder=encoder)
 
         # Return the audio file with the codec applied
-        return encoder.apply(waveform, sr)
+        return encoder.apply(waveform, sr), sr
     
     elif codec == 'opus':
         # Load the audio file
@@ -174,7 +174,7 @@ def simulate_packet_loss(input_audio, loss_rate):
     indices_to_drop = np.random.choice(num_samples, lost_samples, replace=False)
 
     simulated_data = np.delete(audio_data, indices_to_drop)
-    return simulated_data
+    return simulated_data, sr
 
 def find_volume(audio):
     rms = np.sqrt(np.mean(audio**2))
@@ -325,10 +325,10 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         print("Adding Codec Artifacts Effects")
 
         # Apply G.722 codec for the audio file
-        codec_added_audio = add_codec_loss(target_dir + "volu_" + str(audio), "wav", "g722")
+        codec_added_audio, sample_rate = add_codec_loss(target_dir + "volu_" + str(audio), "wav", "g722")
 
         # Save the audio file with the codec artifacts effect
-        sf.write(target_dir + "code_" + str(audio), codec_added_audio, 16000)
+        sf.write(target_dir + "code_" + str(audio), codec_added_audio, sample_rate)
         # ----- End Codec Artifacts Effects ----- 
 
         # ----- Start Downsampling Effects ----- 
