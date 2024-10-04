@@ -30,11 +30,14 @@ def divide_list_randomly(lst, n):
 
     return parts
 
-def make_directory(directory, ignore=False):
+def make_directory(directory, ignore=False, replace=True):
     if not os.path.exists(directory):
         # Make a directory to store the augmented data
         os.makedirs(directory, exist_ok=True)
     else:
+        if not replace:
+            print("Keeping the existing directory.")
+            return
         if ignore:
             shutil.rmtree(directory)
             os.makedirs(directory, exist_ok=True)

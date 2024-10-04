@@ -219,8 +219,8 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
     target_dir = os.getcwd() + "/augmented_data/VoIP_perterbations/"
     completed_dir = os.getcwd() + "/Completed_Audio_Files/"
-    make_directory(target_dir)
-    make_directory(completed_dir)
+    make_directory(target_dir, replace=False)
+    make_directory(completed_dir, replace=False)
 
     for audio in tqdm(audio_files, desc="Adding VoIP Perterbation Effects"):
         flag_fault = True
