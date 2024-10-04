@@ -199,38 +199,59 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
     for audio in tqdm(audio_files, desc="Adding VoIP Perterbation Effects"):
         flag_fault = True
+
+        # Input Audio Loading Path
         input_audio = reference_dir + str(audio)
+
+        # Load the input audio file
         input_audio_signal, sr  = readwav(input_audio)
+
+        # ----- Start Reverberation Effects -----
+        print("Adding Reverberation Effects")
+
+        # Output Audio Saving Path for Reverberation Effects
         output_audio = target_dir + "reve_" + str(audio)
 
-        # Start Reverberation Effects
-        print("Adding Reverberation Effects")
+        # Randomly select the reverb effect
         reverb_selectable = random.choice([0, 1])
-        add_reverberation(input_audio, output_audio, selectable=reverb_selectable)
-        # End Reverberation Effects
 
+        # Add the reverberation effect to the audio file
+        add_reverberation(input_audio, output_audio, selectable=reverb_selectable)
+        ### ----- End Reverberation Effects ----- 
+
+        # Randomly select the background noise effect
         bg_noise_selection = random.choice([0, 1])
 
         if bg_noise_selection == 0:
-            # Start Gaussian Noise Effects
+            # ----- Start Gaussian Noise Effects ----- 
             print("Adding Gaussian Noise Effects")
+
+            # Randomly select the SNR level for the Gaussian noise
             desired_snr_dB = random.choice(gaussian_SNR_levels)
 
             while flag_fault:
                 print("SNR: ", desired_snr_dB)
+
+                # Add the Gaussian noise to the audio file
                 gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
+
+                # Calculate the STI of the noisy signal
                 sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
+
+                # Check if the STI is below the threshold
                 if sti < sti_threshold:
                     print("STI is below the threshold. Trying another SNR level.")
                     desired_snr_dB += 1
                     flag_fault = True
                 else:
                     flag_fault = False
+
+            # Save the audio file with the Gaussian noise effect
             sf.write(target_dir + "bgno_" + str(audio), gaussian_noise_signal, sample_rate)
-            # End Gaussian Noise Effects
+            # ----- End Gaussian Noise Effects  ----- 
 
         else:
-            # Start Ambient Noise Effects
+            # ----- Start Ambient Noise Effects ----- 
             print("Adding Ambient Noise Effects")
             noise_files = os.listdir(ambient_noise_dir)
             desired_snr_dB = random.choice(ambient_SNR_levels)
@@ -239,19 +260,19 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             noise_audio = ambient_noise_dir + str(noise)
             ambient_noise_signal, sample_rate = add_ambient_noise(target_dir + "reve_" + str(audio), noise_audio, desired_snr_dB, sti_threshold)
             sf.write(target_dir + "bgno_" + str(audio), ambient_noise_signal, sample_rate)
-            # End Ambient Noise Effects
+            # ----- End Ambient Noise Effects ----- 
 
-        # Start Volume Reduction Effects
+        # ----- Start Volume Reduction Effects ----- 
 
-        # End Volume Reduction Effects
+        # ----- End Volume Reduction Effects ----- 
 
-        # Start Codec Artifacts Effects
+        # ----- Start Codec Artifacts Effects ----- 
         print("Adding Codec Artifacts Effects")
         codec_added_audio = add_codec_loss(target_dir + "bgno_" + str(audio), "wav", "g722")
         sf.write(target_dir + "code_" + str(audio), codec_added_audio, 16000)
-        # End Codec Artifacts Effects
+        # ----- End Codec Artifacts Effects ----- 
 
-        # Start Downsampling Effects
+        # ----- Start Downsampling Effects ----- 
         print("Adding Downsampling Effects")
         sampling_freqs = list(np.arange(lower_sampling_rate, current_sampling_rate, 5000))
         sampling_freqs.sort(reverse=True)
@@ -270,13 +291,13 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
                 flag_fault = False
 
         sf.write(target_dir + "down_" + str(audio), downsampled_audio, sr)
-        # End Downsampling Effects
+        # ----- End Downsampling Effects ----- 
 
-        # Start Packet Loss Effects
+        # ----- Start Packet Loss Effects ----- 
         print("Adding Packet Loss Effects")
         loss_rate = packet_loss_rate
         packet_loss_audio = simulate_packet_loss(target_dir + "down_" + str(audio), loss_rate)
-        # End Packet Loss Effects
+        # ----- End Packet Loss Effects ----- 
 
 
         
