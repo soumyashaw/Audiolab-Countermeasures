@@ -19,7 +19,7 @@ from tqdm import tqdm
 import soundfile as sf
 from pydub import AudioSegment
 
-def calculate_STI(target_audio, reference_audio, refRate):
+def calculate_STI(reference_audio, target_audio, refRate):
     try:
         STI = stiFromAudio(reference_audio, target_audio, refRate)
         print("STI: ", STI)
@@ -48,7 +48,7 @@ def add_white_noise(audioPath: str, snr_dB):
 
     return noisy_signal, sr
 
-def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
+def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold, reference_audio):
     
     flag_fault = True
 
@@ -95,7 +95,7 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold):
             sr = 18000
 
         # Calculate the STI of the noisy signal
-        STI = stiFromAudio(signal, noisy_signal, sr)
+        STI = stiFromAudio(reference_audio, noisy_signal, sr)
 
         if STI > sti_threshold:
             flag_fault = False
@@ -191,13 +191,16 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
     print(" "*50 + "\033[91mAdding VoIP Perterbation Effects\033[0m")
     print()
 
+    # List all the audio files in the reference directory (original audio files)
     audio_files = os.listdir(reference_dir)
 
+    # Judge the amount of volume reduction justified using a random sample audio file
     vol_dB = 100.0
     dB_reduced = 1
     audio = random.choice(audio_files)
     reference_audio, sr = librosa.load(reference_dir + audio, sr=None)
 
+    # Loop to find the amount of volume reduction justified
     while vol_dB > volume_threshold:
         db_reduction = -1 * dB_reduced
         reduction_factor = 10 ** (db_reduction / 20)
@@ -262,7 +265,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
                 gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
 
                 # Calculate the STI of the noisy signal
-                sti = calculate_STI(gaussian_noise_signal, input_audio_signal, sample_rate)
+                sti = calculate_STI(input_audio_signal, gaussian_noise_signal, sample_rate)
 
                 # Check if the STI is below the threshold
                 if sti < sti_threshold:
@@ -279,36 +282,74 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         else:
             # ----- Start Ambient Noise Effects ----- 
             print("Adding Ambient Noise Effects")
+
+            # Enumerate the ambient noise files in the directory
             noise_files = os.listdir(ambient_noise_dir)
+
+            # Randomly select the SNR level for the ambient noise
             desired_snr_dB = random.choice(ambient_SNR_levels)
             print("SNR: ", desired_snr_dB)
+
+            # Randomly choose the ambient noise file
             noise = random.choice(noise_files)
+
             noise_audio = ambient_noise_dir + str(noise)
-            ambient_noise_signal, sample_rate = add_ambient_noise(target_dir + "reve_" + str(audio), noise_audio, desired_snr_dB, sti_threshold)
+
+            # Add the ambient noise to the audio file
+            ambient_noise_signal, sample_rate = add_ambient_noise(target_dir + "reve_" + str(audio), noise_audio, desired_snr_dB, sti_threshold, input_audio_signal)
+
+            # Save the audio file with the ambient noise effect
             sf.write(target_dir + "bgno_" + str(audio), ambient_noise_signal, sample_rate)
             # ----- End Ambient Noise Effects ----- 
 
         # ----- Start Volume Reduction Effects ----- 
+        print("Adding Volume Reduction Effects")
+
+        # Load the reference audio file
+        reference_audio, sr = librosa.load(target_dir + "bgno_" + str(audio), sr=None)
+
+        # Randomly select the volume reduction level
+        vol_dB = random.choice(vol_dBs)
+
+        # Calculate the reduction factor based on the volume reduction level
+        db_reduction = -1 * vol_dB
+        reduction_factor = 10 ** (db_reduction / 20)
+        volume_reduced_audio = reference_audio * reduction_factor
+
+        # Save the audio file with the volume reduction effect
+        sf.write(target_dir + "volu_" + str(audio), volume_reduced_audio, sr)
 
         # ----- End Volume Reduction Effects ----- 
 
         # ----- Start Codec Artifacts Effects ----- 
         print("Adding Codec Artifacts Effects")
-        codec_added_audio = add_codec_loss(target_dir + "bgno_" + str(audio), "wav", "g722")
+
+        # Apply G.722 codec for the audio file
+        codec_added_audio = add_codec_loss(target_dir + "volu_" + str(audio), "wav", "g722")
+
+        # Save the audio file with the codec artifacts effect
         sf.write(target_dir + "code_" + str(audio), codec_added_audio, 16000)
         # ----- End Codec Artifacts Effects ----- 
 
         # ----- Start Downsampling Effects ----- 
         print("Adding Downsampling Effects")
+
+        # Generate a list of sampling frequencies according to the lower and current sampling rates
         sampling_freqs = list(np.arange(lower_sampling_rate, current_sampling_rate, 5000))
+
+        # Sort the sampling frequencies in descending order
         sampling_freqs.sort(reverse=True)
+
+        # Randomly select the sampling frequency for the downsampling effect
         freq = random.choice(sampling_freqs)
         
         flag_fault = True
         while flag_fault:
             print("Sampling Frequency: ", freq)
+
+            # Downsample the audio file
             downsampled_audio, sample_rate = downsample_audio(target_dir + "code_" + str(audio), freq, current_sampling_rate)
-            sti = calculate_STI(downsampled_audio, input_audio_signal, sample_rate)
+            sti = calculate_STI(input_audio_signal, downsampled_audio, sample_rate)
             if sti < sti_threshold:
                 print("STI is below the threshold. Trying another SNR level.")
                 freq = sampling_freqs[sampling_freqs.index(freq) - 1]
@@ -324,10 +365,6 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         loss_rate = packet_loss_rate
         packet_loss_audio = simulate_packet_loss(target_dir + "down_" + str(audio), loss_rate)
         # ----- End Packet Loss Effects ----- 
-
-
-        
-        
 
 
         # Append the output audio file to the list for text file creation
