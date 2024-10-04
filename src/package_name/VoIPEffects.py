@@ -232,7 +232,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         input_audio_signal, sr  = readwav(input_audio)
 
         # ----- Start Reverberation Effects -----
-        #print("Adding Reverberation Effects")
+        print("Adding Reverberation Effects")
 
         # Output Audio Saving Path for Reverberation Effects
         output_audio = target_dir + "reve_" + str(audio)
@@ -249,7 +249,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
         if bg_noise_selection == 0:
             # ----- Start Gaussian Noise Effects ----- 
-            #print("Adding Gaussian Noise Effects")
+            print("Adding Gaussian Noise Effects")
 
             # Sort the SNR levels in descending order
             gaussian_SNR_levels.sort(reverse=True)
@@ -278,7 +278,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
         else:
             # ----- Start Ambient Noise Effects ----- 
-            #print("Adding Ambient Noise Effects")
+            print("Adding Ambient Noise Effects")
 
             # Enumerate the ambient noise files in the directory
             noise_files = os.listdir(ambient_noise_dir)
@@ -299,7 +299,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             # ----- End Ambient Noise Effects ----- 
 
         # ----- Start Volume Reduction Effects ----- 
-        #print("Adding Volume Reduction Effects")
+        print("Adding Volume Reduction Effects")
 
         # Load the reference audio file
         reference_audio, sr = librosa.load(target_dir + "bgno_" + str(audio), sr=None)
@@ -318,7 +318,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # ----- End Volume Reduction Effects ----- 
 
         # ----- Start Codec Artifacts Effects ----- 
-        #print("Adding Codec Artifacts Effects")
+        print("Adding Codec Artifacts Effects")
 
         # Apply G.722 codec for the audio file
         codec_added_audio, sample_rate = add_codec_loss(target_dir + "volu_" + str(audio), "wav", "g722")
@@ -328,7 +328,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # ----- End Codec Artifacts Effects ----- 
 
         # ----- Start Downsampling Effects ----- 
-        #print("Adding Downsampling Effects")
+        print("Adding Downsampling Effects")
 
         # Generate a list of sampling frequencies according to the lower and current sampling rates
         sampling_freqs = list(np.arange(lower_sampling_rate, current_sampling_rate, 5000))
@@ -354,7 +354,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # ----- End Downsampling Effects ----- 
 
         # ----- Start Packet Loss Effects ----- 
-        #print("Adding Packet Loss Effects")
+        print("Adding Packet Loss Effects")
         loss_rate = random.choice(packet_loss_rates)
         packet_loss_audio, sample_rate = simulate_packet_loss(target_dir + "down_" + str(audio), loss_rate)
         # ----- End Packet Loss Effects ----- 
