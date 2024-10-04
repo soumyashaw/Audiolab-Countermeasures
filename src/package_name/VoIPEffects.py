@@ -176,6 +176,12 @@ def simulate_packet_loss(input_audio, loss_rate):
     simulated_data = np.delete(audio_data, indices_to_drop)
     return simulated_data
 
+def find_volume(audio):
+    rms = np.sqrt(np.mean(audio**2))
+
+    # Convert the RMS value to decibels (dB)
+    return 20 * np.log10(rms)
+
 
 
 def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, volume_threshold: float, lower_sampling_rate: int, current_sampling_rate: int, packet_loss_rate: float, reference_dir: str, sti_threshold: float):
@@ -189,6 +195,8 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
 
     vol_dB = 100.0
     dB_reduced = 1
+    audio = random.choice(audio_files)
+    reference_audio, sr = librosa.load(reference_dir + audio, sr=None)
 
     while vol_dB > volume_threshold:
         db_reduction = -1 * dB_reduced
@@ -202,6 +210,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
             dB_reduced += 1
 
     vol_dBs = [float(i) for i in range(1, dB_reduced)]
+    print(vol_dBs)
 
     os.chdir(reference_dir)
     os.chdir("../")
