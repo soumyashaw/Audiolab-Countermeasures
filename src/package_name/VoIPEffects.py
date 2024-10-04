@@ -178,16 +178,30 @@ def simulate_packet_loss(input_audio, loss_rate):
 
 
 
-def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, lower_sampling_rate: int, current_sampling_rate: int, packet_loss_rate: float, reference_dir: str, sti_threshold: float):
+def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels: list, ambient_noise_dir: str, volume_threshold: float, lower_sampling_rate: int, current_sampling_rate: int, packet_loss_rate: float, reference_dir: str, sti_threshold: float):
     output_files = []
     flag_fault = True
 
     print(" "*50 + "\033[91mAdding VoIP Perterbation Effects\033[0m")
     print()
 
-    gaussian_SNR_levels.sort(reverse=True)
-
     audio_files = os.listdir(reference_dir)
+
+    vol_dB = 100.0
+    dB_reduced = 1
+
+    while vol_dB > volume_threshold:
+        db_reduction = -1 * dB_reduced
+        reduction_factor = 10 ** (db_reduction / 20)
+
+        volume_reduced_audio = reference_audio * reduction_factor
+
+        vol_dB = find_volume(volume_reduced_audio)
+
+        if vol_dB >= volume_threshold:
+            dB_reduced += 1
+
+    vol_dBs = [float(i) for i in range(1, dB_reduced)]
 
     os.chdir(reference_dir)
     os.chdir("../")
@@ -225,6 +239,9 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         if bg_noise_selection == 0:
             # ----- Start Gaussian Noise Effects ----- 
             print("Adding Gaussian Noise Effects")
+
+            # Sort the SNR levels in descending order
+            gaussian_SNR_levels.sort(reverse=True)
 
             # Randomly select the SNR level for the Gaussian noise
             desired_snr_dB = random.choice(gaussian_SNR_levels)
