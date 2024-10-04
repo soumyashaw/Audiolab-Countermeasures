@@ -21,6 +21,7 @@ from pydub import AudioSegment
 
 def calculate_STI(reference_audio, target_audio, refRate):
     try:
+        print("Calculating STI", refRate)
         STI = stiFromAudio(reference_audio, target_audio, refRate)
         print("STI: ", STI)
         return STI
