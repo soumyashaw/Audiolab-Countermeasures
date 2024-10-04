@@ -363,7 +363,7 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         # ----- Start Packet Loss Effects ----- 
         print("Adding Packet Loss Effects")
         loss_rate = packet_loss_rate
-        packet_loss_audio = simulate_packet_loss(target_dir + "down_" + str(audio), loss_rate)
+        packet_loss_audio, sample_rate = simulate_packet_loss(target_dir + "down_" + str(audio), loss_rate)
         # ----- End Packet Loss Effects ----- 
 
 
