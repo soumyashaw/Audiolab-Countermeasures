@@ -81,7 +81,7 @@ def main():
             if utility_data_augmentation_selected_option_index == 1:
                 gaussian_SNR_levels = [5, 7, 9, 11, 13, 15]
                 ambient_SNR_levels = [5, 10, 15, 20, 25, 30]
-                add_voip_perterbation_effects(gaussian_SNR_levels, ambient_SNR_levels, args.ambient_noise_dir, args.lower_sampling_rate, args.current_sampling_rate, args.packet_loss_rate, args.reference_dir, args.sti_threshold)
+                add_voip_perterbation_effects(gaussian_SNR_levels, ambient_SNR_levels, args.ambient_noise_dir, args.volume_threshold, args.lower_sampling_rate, args.current_sampling_rate, args.packet_loss_rate, args.reference_dir, args.sti_threshold)
 
             if utility_data_augmentation_selected_option_index == 2:
                 add_video_conferencing_perterbation_effects()
