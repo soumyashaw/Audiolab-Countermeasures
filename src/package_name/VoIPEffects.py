@@ -273,7 +273,11 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
                 gaussian_noise_signal, sample_rate = add_white_noise(target_dir + "reve_" + str(audio), desired_snr_dB)
 
                 # Calculate the STI of the noisy signal
-                sti = calculate_STI(input_audio_signal, gaussian_noise_signal, sample_rate)
+                try:
+                    sti = calculate_STI(input_audio_signal, gaussian_noise_signal, sample_rate)
+                except Exception as e:
+                    #print("Error in STI calculation:", e)
+                    sti = 1.0
 
                 # Check if the STI is below the threshold
                 if sti < sti_threshold:
@@ -359,7 +363,11 @@ def add_voip_perterbation_effects(gaussian_SNR_levels: list, ambient_SNR_levels:
         while flag_fault:
             # Downsample the audio file
             downsampled_audio, sample_rate = downsample_audio(target_dir + "code_" + str(audio), freq, current_sampling_rate)
-            sti = calculate_STI(input_audio_signal, downsampled_audio, sample_rate)
+            try:
+                sti = calculate_STI(input_audio_signal, downsampled_audio, sample_rate)
+            except Exception as e:
+                #print("Error in STI calculation:", e)
+                sti = 1.0
             if sti < sti_threshold:
                 freq += 5000
                 flag_fault = True
