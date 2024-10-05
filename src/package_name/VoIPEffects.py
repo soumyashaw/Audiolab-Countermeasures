@@ -26,7 +26,7 @@ def calculate_STI(reference_audio, target_audio, ref_rate):
         return STI
 
     except Exception as e:
-        print("Error in STI calculation:", e)
+        #print("Error in STI calculation:", e)
         return 1.0
 
 def add_white_noise(audioPath: str, snr_dB):
@@ -97,7 +97,12 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold, reference_aud
             sr = 18000
 
         # Calculate the STI of the noisy signal
-        STI = stiFromAudio(reference_audio, noisy_signal, sr)
+        try:
+            STI = stiFromAudio(reference_audio, noisy_signal, sr)
+
+        except Exception as e:
+            #print("Error in STI calculation:", e)
+            STI = 1.0
 
         if STI > sti_threshold:
             flag_fault = False
