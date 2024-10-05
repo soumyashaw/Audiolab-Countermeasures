@@ -14,10 +14,10 @@ with open("protocol.txt", "a") as f:
         f.write(f"LA_0000 {audio.split('.')[0]} - - spoof\n")
 
 
-base_dir="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/ASVspoof2019/LA/ASVspoof2019_LA_train/LibriSpeech/train-clean-100"
+base_dir="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/ASVspoof2019/LA/ASVspoof2019_LA_train/wav48_silence_trimmed"
 
 # Set the destination folder where all audio files will be moved
-destination_folder="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/ASVspoof2019/LA/ASVspoof2019_LA_train/LibriSpeech/train-clean-100/all"
+destination_folder="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/ASVspoof2019/LA/ASVspoof2019_LA_train/wav48_silence_trimmed/all"
 
 # Create the destination folder if it doesn't exist
 mkdir -p "$destination_folder"
