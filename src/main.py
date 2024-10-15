@@ -123,7 +123,7 @@ def main():
                 add_amplitude_reduction_effects(args.reference_dir, args.volume_threshold)
                 
             elif augment_data_selected_option_index == 4:
-                add_codec_artifacts(args.reference_dir)
+                add_codec_artifacts(args.reference_dir, ['g722'])
 
             elif augment_data_selected_option_index == 5:
                 add_downsampling_effects(args.reference_dir, args.lower_sampling_rate, args.current_sampling_rate, args.sti_threshold)
@@ -143,8 +143,8 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/home/soumyas_kvmohan/ASVspoof_train/train_spoof/muffling/")
-    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/home/soumyas_kvmohan/ASVspoof_train/train_spoof/muffling/")
+    parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/home/soumyas_kvmohan/ASVspoof_train/train_spoof/g722/")
+    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/home/soumyas_kvmohan/ASVspoof_train/train_spoof/g722/")
     parser.add_argument('-s', '--sti_threshold', type=float, help="STI threshold for the augmented data", default=0.5)
     parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-35)
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)

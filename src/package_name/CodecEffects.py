@@ -44,13 +44,11 @@ def add_codec_loss(audioPath, format, codec: str):
 
         return audio
     
-def add_codec_artifacts(reference_dir: str):
+def add_codec_artifacts(reference_dir: str, codecs: list = ['mulaw', 'g722', 'alaw', 'opus']):
     output_files = []
 
     print(" "*50 + "\033[91mAdding Codec Losses\033[0m")
     print()
-
-    codecs = ['mulaw', 'g722', 'alaw', 'opus']
 
     # Empty list to store the Gaussian Noise directories with particular SNR levels
     directories_made = []
