@@ -5,7 +5,7 @@ import shutil
 from tqdm import tqdm
 from package_name.utils import divide_list_randomly, make_directory, calculate_avg_sti
 
-def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_path: str = "/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/iir.wav"):
+def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_path: str = "/home/soumyas_kvmohan/Audiolab-Countermeasures/data/iir.wav"):
     if selectable == 0:
         cmd1 = f"ffmpeg -loglevel error -i {audioPath} -map 0 -c:v copy -af aecho=1.0:0.9:70:0.5 {targetpath}"
         os.system(cmd1)
