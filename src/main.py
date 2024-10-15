@@ -152,6 +152,6 @@ if __name__ == "__main__":
     parser.add_argument('-e', '--current_sampling_rate', type=int, help="Current sampling rate of the audio files", default=16000)
     parser.add_argument('-i', '--input_format', type=str, help="Input format of the audio files", default="wav")
     parser.add_argument('-o', '--output_format', type=str, help="Output format of the audio files", default="wav")
-    parser.add_argument('-n', '--ambient_noise_dir', type=str, help="path to the ambient noise files to be used", default="/hkfs/home/haicore/hgf_cispa/hgf_yie2732/Audiolab-Countermeasures/data/ambient_noise/")
+    parser.add_argument('-n', '--ambient_noise_dir', type=str, help="path to the ambient noise files to be used", default="/home/soumyas_kvmohan/Audiolab-Countermeasures/data/ambient_noise/")
     args = parser.parse_args()
     main()
