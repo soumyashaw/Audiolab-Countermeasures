@@ -143,8 +143,8 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/home/soumyas_kvmohan/ASVspoof_dev/dev_bonafide/ambient_noise/")
-    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/home/soumyas_kvmohan/ASVspoof_dev/dev_bonafide/ambient_noise/")
+    parser.add_argument('-t', '--target_dir', type=str, help="path to the target audio's directory", default="/home/soumyas_kvmohan/ASVspoof_train/train_bonafide/ambient_noise/")
+    parser.add_argument('-r', '--reference_dir', type=str, help="path to the reference audio's directory", default="/home/soumyas_kvmohan/ASVspoof_train/train_bonafide/ambient_noise/")
     parser.add_argument('-s', '--sti_threshold', type=float, help="STI threshold for the augmented data", default=0.5)
     parser.add_argument('-v', '--volume_threshold', type=float, help="Volume threshold for the augmented data", default=-35)
     parser.add_argument('-l', '--packet_loss_rate', type=float, help="Target Packet Loss Rate for the augmented data", default=0.1)
