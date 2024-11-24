@@ -46,12 +46,12 @@ time.sleep(2)
 print("Select the Option: English Australian -> Olivia, Female")
 _ = input()
 
-globalCounter = 7000
+globalCounter = 0
 textarea = driver.find_element(By.ID, "formFieldForInputText")
 clear_button = driver.find_element(By.CLASS_NAME, 'clearTextButton')
 download_button = driver.find_element(By.CLASS_NAME, 'downloadButton')
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -67,7 +67,7 @@ print()
 print("Select the Option: English British -> Amy, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -83,7 +83,7 @@ print()
 print("Select the Option: English South African -> Ayanda, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -99,7 +99,7 @@ print()
 print("Select the Option: English US -> Danielle, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -115,7 +115,7 @@ print()
 print("Select the Option: English US -> Joanna, Female")
 _ = input()
 
-for i in range(19):
+for i in range(76):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -131,7 +131,7 @@ print()
 print("Select the Option: English US -> Ruth, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -147,7 +147,7 @@ print()
 print("Select the Option: English US -> Matthew, Male")
 _ = input()
 
-for i in range(20):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -163,7 +163,7 @@ print()
 print("Select the Option: English US -> Stephen, Male")
 _ = input()
 
-for i in range(21):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -179,7 +179,7 @@ print()
 print("Select the Option: French -> Lea, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -195,7 +195,7 @@ print()
 print("Select the Option: German -> Vicki, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -211,7 +211,7 @@ print()
 print("Select the Option: Spanish Castilian -> Lucia, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -227,7 +227,7 @@ print()
 print("Select the Option: Spanish Mexican -> Mia, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()
@@ -243,7 +243,7 @@ print()
 print("Select the Option: Spanish US -> Lupe, Female")
 _ = input()
 
-for i in range(19):
+for i in range(77):
     text = data['sentence'][globalCounter]
 
     clear_button.click()

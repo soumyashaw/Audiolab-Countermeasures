@@ -119,7 +119,7 @@ def add_ambient_noise(audioPath, noisePath, snr_dB, sti_threshold, reference_aud
 
     return noisy_signal, sr
 
-def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_path: str = "/home/soumyas_kvmohan/Audiolab-Countermeasures/data/iir.wav"):
+def add_reverberation(audioPath:str, targetpath: str, selectable: int = 0, iir_path: str = "/Users/soumyashaw/Documents/GitHub/Audiolab-Countermeasures/data/iir.wav"):
     if selectable == 0:
         cmd1 = f"ffmpeg -loglevel error -i {audioPath} -map 0 -c:v copy -af aecho=1.0:0.9:70:0.5 {targetpath}"
         os.system(cmd1)
