@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Step 1: Load the log file into a DataFrame
-log_file = "/Users/soumyashaw/Desktop/ACMLogFiles/Run1_metrics.txt"  # Replace with your actual log file path
+log_file = "/Users/soumyashaw/Desktop/ACMLogFiles/Run7_metrics.txt"  # Replace with your actual log file path
 metrics = pd.read_csv(log_file)
 
 # Step 2: Compute Additional Metrics
@@ -80,5 +80,5 @@ axes[2, 1].legend()
 
 # Adjust layout and show the plot
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-plt.savefig("/Users/soumyashaw/Desktop/ACMLogFiles/Run_.png", dpi=300, bbox_inches="tight")
+plt.savefig("/Users/soumyashaw/Desktop/ACMLogFiles/Run7_trial.png", dpi=300, bbox_inches="tight")
 plt.show()

@@ -131,7 +131,7 @@ def main():
             elif augment_data_selected_option_index == 6:
                 add_packet_loss_effects(args.reference_dir, args.packet_loss_rate, args.sti_threshold)
 
-            elif augment_data_selected_option_index == 6:
+            elif augment_data_selected_option_index == 7:
                 continue
 
         elif selected_option_index == 3:
